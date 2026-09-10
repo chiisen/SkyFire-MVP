@@ -105,7 +105,8 @@
 | `src/render/`      | 子模組：`shared` 圖元／`background` 背景／`units` 單位／`combat` 戰鬥物件 |
 | `src/airframes.js` | 自 Thunderfall 移植（§2）                                                 |
 | `src/audio.js`     | 自 Thunderfall 移植（§2）                                                 |
-| `src/app.js`       | 頁面控制、輸入、場景切換                                                  |
+| `src/app.js`       | 頁面進入點：建立狀態、接線、開主迴圈             |
+| `src/app/`         | 子模組：`state` 狀態／`hud` 介面／`screens` 流程／`input` 接線／`frame` 迴圈 |
 | `build.mjs`        | 零依賴建置，輸出 `dist/`（鏡像原始碼佈局）                                |
 | `tests/`           | 引擎單元測試（§8）                                                        |
 | `icon.svg`         | 自 Thunderfall 複用                                                       |
