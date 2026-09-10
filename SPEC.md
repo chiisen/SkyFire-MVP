@@ -95,21 +95,21 @@
 
 ## 6. 檔案結構（對標移植）
 
-| 檔案               | 變更                                                                      |
-| ------------------ | ------------------------------------------------------------------------- |
-| `index.html`       | 入口，手機 viewport + 按鈕佈局                                            |
-| `src/style.css`    | HUD/機庫/按鈕樣式                                                         |
-| `src/data.js`      | 戰機/武器/關卡/首領數值（§4）                                             |
-| `src/engine.js`    | 主迴圈、固定步長、碰撞、掉落、計時、暫停凍結                              |
-| `src/render.js`    | 繪製筒倉：轉出口＋組幀（§2）                                              |
-| `src/render/`      | 子模組：`shared` 圖元／`background` 背景／`units` 單位／`combat` 戰鬥物件 |
-| `src/airframes.js` | 自 Thunderfall 移植（§2）                                                 |
-| `src/audio.js`     | 自 Thunderfall 移植（§2）                                                 |
-| `src/app.js`       | 頁面進入點：建立狀態、接線、開主迴圈             |
+| 檔案               | 變更                                                                         |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `index.html`       | 入口，手機 viewport + 按鈕佈局                                               |
+| `src/style.css`    | HUD/機庫/按鈕樣式                                                            |
+| `src/data.js`      | 戰機/武器/關卡/首領數值（§4）                                                |
+| `src/engine.js`    | 主迴圈、固定步長、碰撞、掉落、計時、暫停凍結                                 |
+| `src/render.js`    | 繪製筒倉：轉出口＋組幀（§2）                                                 |
+| `src/render/`      | 子模組：`shared` 圖元／`background` 背景／`units` 單位／`combat` 戰鬥物件    |
+| `src/airframes.js` | 自 Thunderfall 移植（§2）                                                    |
+| `src/audio.js`     | 自 Thunderfall 移植（§2）                                                    |
+| `src/app.js`       | 頁面進入點：建立狀態、接線、開主迴圈                                         |
 | `src/app/`         | 子模組：`state` 狀態／`hud` 介面／`screens` 流程／`input` 接線／`frame` 迴圈 |
-| `build.mjs`        | 零依賴建置，輸出 `dist/`（鏡像原始碼佈局）                                |
-| `tests/`           | 引擎單元測試（§8）                                                        |
-| `icon.svg`         | 自 Thunderfall 複用                                                       |
+| `build.mjs`        | 零依賴建置，輸出 `dist/`（鏡像原始碼佈局）                                   |
+| `tests/`           | 引擎單元測試（§8）                                                           |
+| `icon.svg`         | 自 Thunderfall 複用                                                          |
 
 ## 7. 範圍外
 

@@ -73,12 +73,12 @@ dist/
 | ------------------------------------- | ------------------------------------------------------------ |
 | `index.html`                          | 遊戲入口：機庫、戰場畫布、HUD、覆蓋層、說明對話框的 DOM 結構 |
 | `src/style.css`                       | 全站樣式：機庫、HUD、按鈕、手機版面                          |
-| `src/app.js`                          | 頁面進入點：建立狀態、接線、開主迴圈                            |
-| `src/app/state.js`                    | 共用狀態：DOM 查詢、本地儲存、格式化、狀態容器                  |
-| `src/app/hud.js`                      | HUD 更新：分數、血量、武器、關卡資訊                            |
-| `src/app/screens.js`                  | 場景流程：選機、開局、暫停、續戰、覆蓋層、公告                  |
-| `src/app/input.js`                    | 輸入接線：觸控、鍵盤、按鈕、聲音開關                            |
-| `src/app/frame.js`                    | 主迴圈步進：推進模擬、繪製、音效                                |
+| `src/app.js`                          | 頁面進入點：建立狀態、接線、開主迴圈                         |
+| `src/app/state.js`                    | 共用狀態：DOM 查詢、本地儲存、格式化、狀態容器               |
+| `src/app/hud.js`                      | HUD 更新：分數、血量、武器、關卡資訊                         |
+| `src/app/screens.js`                  | 場景流程：選機、開局、暫停、續戰、覆蓋層、公告               |
+| `src/app/input.js`                    | 輸入接線：觸控、鍵盤、按鈕、聲音開關                         |
+| `src/app/frame.js`                    | 主迴圈步進：推進模擬、繪製、音效                             |
 | `src/engine.js`                       | 遊戲引擎：主迴圈、碰撞、敵機波次、彈幕、掉落、計時、暫停凍結 |
 | `src/data.js`                         | 數值資料：戰機、武器、關卡、首領、升級卡                     |
 | `src/render.js`                       | 繪製筒倉：轉出口 `drawShip`＋組幀 `drawFrame`                |
@@ -90,9 +90,9 @@ dist/
 | `src/audio.js`                        | 合成聲音：Web Audio 即時合成音效與背景音樂步進器，無音檔     |
 | `icon.svg`                            | 瀏覽器分頁圖示                                               |
 | `build.mjs`                           | 零依賴建置：複製 9 個運行檔至 `dist/`                        |
-| `tests/engine.test.mjs`               | 引擎單元測試：27 項（Node 內建 `node:test`）                  |
-| `tests/render.smoke.mjs`              | 無頭渲染煙測：戰鬥＋機庫各跑一幀                               |
-| `tests/app.boot.mjs`                  | 開機煙測：DOM stub 走真實監聽器驗證開局／暫停／炸彈            |
+| `tests/engine.test.mjs`               | 引擎單元測試：27 項（Node 內建 `node:test`）                 |
+| `tests/render.smoke.mjs`              | 無頭渲染煙測：戰鬥＋機庫各跑一幀                             |
+| `tests/app.boot.mjs`                  | 開機煙測：DOM stub 走真實監聽器驗證開局／暫停／炸彈          |
 | `package.json`                        | 專案資訊與 `test`／`build`／`format` 指令                    |
 | `SPEC.md`                             | 完整規格書（對標 Thunderfall 1:1）                           |
 | `CHANGELOG.md`                        | 變更日誌（Keep a Changelog，繁體中文）                       |
