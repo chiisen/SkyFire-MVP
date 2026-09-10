@@ -1,4 +1,4 @@
-import { W, H, TAU, LOOT, PAL, clamp, hash, mod, poly, line, circle, halo, plate } from './shared.js';
+import { TAU, LOOT, clamp, hash, poly, line, circle, plate } from './shared.js';
 
 // 繪製雷射預警虛線與高亮主光束，呈現蓄力到發射的過程。
 export function beam(c, b, time, reduced) {

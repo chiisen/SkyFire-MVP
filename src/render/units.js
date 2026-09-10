@@ -1,4 +1,4 @@
-import { W, H, TAU, LOOT, PAL, clamp, hash, mod, poly, line, circle, halo, plate } from './shared.js';
+import { TAU, clamp, poly, line, circle, plate } from './shared.js';
 
 // 繪製引擎尾焰漸層火焰，表現推進器閃爍的推進效果。
 export function flame(c, x, y, width, height, color, time) {

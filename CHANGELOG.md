@@ -18,3 +18,4 @@
 - 測試與註解繁中化；`README.md` 補啟動、玩法、操作表、建置說明與檔案用途表
 - `src/` 全檔函式級繁中註解（113 行，零邏輯改動）
 - `render.js` 拆分為 `render/` 子模組（`shared`／`background`／`units`／`combat`），`render.js` 留筒倉；`build.mjs` 改遞迴鏡像；附無頭渲染煙測 `tests/render.smoke.mjs`
+- 清除子模組多餘 import；新增 `.gitattributes` 統一 LF 斷行

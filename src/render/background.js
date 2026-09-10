@@ -1,4 +1,4 @@
-import { W, H, TAU, LOOT, PAL, clamp, hash, mod, poly, line, circle, halo, plate } from './shared.js';
+import { W, H, TAU, PAL, hash, mod, poly, line, circle, halo, plate } from './shared.js';
 
 // 繪製海面波紋與兩側艦島，營造第一關海上場景的縱向捲動。
 export function sea(c, t) {

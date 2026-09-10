@@ -91,4 +91,5 @@ dist/
 | `CHANGELOG.md`                        | 變更日誌（Keep a Changelog，繁體中文）                       |
 | `AGENTS.md`、`CLAUDE.md`、`GEMINI.md` | 三份同步的 AI Agent 專案規範                                 |
 | `.prettierrc`、`.prettierignore`      | Prettier 格式設定與排除路徑                                  |
+| `.gitattributes`                      | 統一 LF 斷行，二進位圖檔聲明                                 |
 | `dist/`                               | 建置輸出（不進版控）                                         |

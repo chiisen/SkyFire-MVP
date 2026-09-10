@@ -1,0 +1,3 @@
+# 統一使用 LF 斷行（配合 Prettier endOfLine: lf），避免 Windows  Checkout 時的 CRLF 警告
+* text=auto eol=lf
+*.png binary
