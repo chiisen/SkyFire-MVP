@@ -3,8 +3,10 @@ import { WIDTH, HEIGHT, SHIPS, WEAPONS, STAGES, STAGE_SECONDS, DROP_TTL } from '
 import { drawFrame } from './render.js';
 import { Sound } from './audio.js';
 
+// 依編號取得對應的 DOM 元素。
 const $ = (id) => document.getElementById(id);
 const storage = {
+  // 從本地儲存讀取設定值，讀取失敗時回傳預設值。
   get(key, fallback) {
     try {
       return JSON.parse(localStorage.getItem(`skyfire:${key}`)) ?? fallback;
@@ -12,6 +14,7 @@ const storage = {
       return fallback;
     }
   },
+  // 將設定值寫入本地儲存，寫入失敗時仍保持可遊玩。
   set(key, value) {
     try {
       localStorage.setItem(`skyfire:${key}`, JSON.stringify(value));
@@ -43,7 +46,9 @@ let announcementUntil = 0,
   last = performance.now(),
   accumulator = 0;
 let pauseReason = '航線已凍結，補給與戰鬥計時也一起暫停。';
+// 將分數格式化為七位數前補零字串。
 const formatScore = (n) => Math.max(0, Math.floor(n)).toLocaleString('en-US').padStart(7, '0');
+// 將秒數格式化為分冒號秒字串。
 const formatTime = (t) =>
   `${Math.floor(t / 60)
     .toString()
@@ -61,6 +66,7 @@ $('ship-picker').innerHTML = SHIPS.map(
     `<button class="ship-choice" data-ship="${s.id}" aria-pressed="${s.id === 0}" style="--ship-color:${s.color}"><small>${s.code}</small><strong>${s.name}</strong><span>${s.role}</span></button>`
 ).join('');
 $('best-score').textContent = formatScore(best);
+// 選擇機體並同步機庫顯示與初始武器。
 function chooseShip(id) {
   if (game.mode !== 'hangar') return;
   selectedShip = id;
@@ -81,6 +87,7 @@ $('ship-picker').addEventListener('click', (e) => {
   const button = e.target.closest('[data-ship]');
   if (button) chooseShip(Number(button.dataset.ship));
 });
+// 清空鍵盤與觸控輸入狀態。
 function resetInput() {
   keys.clear();
   input.pointer = false;
@@ -88,9 +95,11 @@ function resetInput() {
   input.dy = 0;
   pointer = null;
 }
+// 將焦點移回遊戲畫布並避免捲動。
 function focusCanvas() {
   canvas.focus({ preventScroll: true });
 }
+// 依所選模式開新局並同步介面狀態。
 function start() {
   const value = $('run-mode').value;
   resetInput();
@@ -113,6 +122,7 @@ function start() {
   window.scrollTo(0, 0);
 }
 $('start-button').addEventListener('click', start);
+// 暫停戰鬥並記錄顯示用的暫停原因。
 function pause(reason) {
   if (game.mode !== 'playing') return;
   pauseReason = reason || '航線已凍結，補給與戰鬥計時也一起暫停。';
@@ -120,6 +130,7 @@ function pause(reason) {
   game.pause();
   syncMode();
 }
+// 從暫停恢復戰鬥並重置計時累積器。
 function resume() {
   resetInput();
   game.resume();
@@ -142,6 +153,7 @@ $('focus-button').addEventListener('click', () => {
   focusMode = !focusMode;
   $('focus-button').setAttribute('aria-pressed', focusMode);
 });
+// 結束本局並返回機庫待命畫面。
 function toHangar() {
   resetInput();
   game.reset();
@@ -157,6 +169,7 @@ function toHangar() {
   updateHud(true);
   $('start-button').focus({ preventScroll: true });
 }
+// 建立帶標籤樣式與點擊行為的按鈕元素。
 function button(label, className, action) {
   const element = document.createElement('button');
   element.className = className;
@@ -164,6 +177,7 @@ function button(label, className, action) {
   element.addEventListener('click', action);
   return element;
 }
+// 依遊戲模式切換場景遮罩與覆蓋層內容。
 function syncMode() {
   if (lastMode === game.mode) return;
   lastMode = game.mode;
@@ -243,6 +257,7 @@ function syncMode() {
   const first = $('overlay').querySelector('button');
   first?.focus({ preventScroll: true });
 }
+// 更新分數血量武器與關卡等介面資訊。
 function updateHud(force = false) {
   const p = game.player,
     playing = game.mode === 'playing';
@@ -329,6 +344,7 @@ function updateHud(force = false) {
           ? 'BOSS ENGAGED'
           : 'GRAZE +25 / MAX COMBO ×5';
 }
+// 顯示關卡與首領的大型中央公告。
 function announce(kicker, title, detail, seconds = 2.7) {
   $('announcement-kicker').textContent = kicker;
   $('announcement-title').textContent = title;
@@ -336,11 +352,13 @@ function announce(kicker, title, detail, seconds = 2.7) {
   $('stage-announcement').hidden = false;
   announcementUntil = game.time + seconds;
 }
+// 顯示短暫的小型提示訊息。
 function toast(text) {
   $('toast').textContent = text;
   $('toast').hidden = false;
   toastUntil = performance.now() + 2500;
 }
+// 消化引擎事件並觸發音效與公告提示。
 function processEvents() {
   for (const event of game.drainEvents()) {
     sound.event(event.type);
@@ -376,6 +394,7 @@ canvas.addEventListener('pointermove', (e) => {
   input.targetX = clamp(pointer.shipX + ((e.clientX - pointer.x) / rect.width) * WIDTH * 1.15, 18, WIDTH - 18);
   input.targetY = clamp(pointer.shipY + ((e.clientY - pointer.y) / rect.height) * HEIGHT * 1.15, 88, HEIGHT - 35);
 });
+// 結束觸控拖曳並清除對應的指標狀態。
 function endPointer(e) {
   if (pointer?.id === e.pointerId) {
     pointer = null;
@@ -437,11 +456,13 @@ $('sound-button').addEventListener('click', () => {
   sound.unlock();
   updateSound();
 });
+// 同步聲音開關按鈕的顯示狀態。
 function updateSound() {
   $('sound-button').setAttribute('aria-pressed', sound.enabled);
   $('sound-button').setAttribute('aria-label', sound.enabled ? '關閉聲音' : '開啟聲音');
   $('sound-label').textContent = sound.enabled ? '聲音' : '靜音';
 }
+// 同步減少動態選項按鈕的顯示狀態。
 function updateReduced() {
   $('reduced-button').setAttribute('aria-pressed', reducedMotion);
   $('reduced-button').textContent = `減少裝飾動態：${reducedMotion ? '開啟' : '關閉'}`;
@@ -460,6 +481,7 @@ $('help-button').addEventListener('click', () => {
   $('help-dialog').showModal();
 });
 document.querySelectorAll('.dialog-close').forEach((b) => b.addEventListener('click', () => $('help-dialog').close()));
+// 依顯示尺寸重設畫布解析度與座標變換。
 function resize() {
   const rect = canvas.getBoundingClientRect(),
     ratio = Math.min(devicePixelRatio || 1, 2);
@@ -468,6 +490,7 @@ function resize() {
   ctx?.setTransform(canvas.width / WIDTH, 0, 0, canvas.height / HEIGHT, 0, 0);
 }
 new ResizeObserver(resize).observe(canvas);
+// 執行主迴圈推進模擬介面繪製與音效。
 function frame(now) {
   const dt = Math.min(0.12, (now - last) / 1000);
   last = now;

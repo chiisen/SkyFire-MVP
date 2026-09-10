@@ -46,7 +46,7 @@ python -m http.server 4173
 
 ### 建置（`npm run build`）
 
-`build.mjs` 只用 Node.js 內建模組，把 9 個運行檔複製到 `dist/`（鏡像原始碼佈局，`index.html` 的 `./src/` 參照不變）：
+`build.mjs` 只用 Node.js 內建模組，把運行檔鏡像複製到 `dist/`（`index.html` 的 `./src/` 參照不變）：
 
 ```powershell
 npm run build
@@ -59,6 +59,9 @@ dist/
 └── src/
     ├── app.js  engine.js  data.js  render.js
     ├── airframes.js  audio.js  style.css
+    └── render/
+        ├── shared.js  background.js
+        └── units.js  combat.js
 ```
 
 - 每次執行先清空 `dist/` 再重建；`dist/` 不進版控，發佈前重跑一次即可。
@@ -66,23 +69,26 @@ dist/
 
 ## 檔案說明
 
-| 檔案                                  | 用途                                                          |
-| ------------------------------------- | ------------------------------------------------------------- |
-| `index.html`                          | 遊戲入口：機庫、戰場畫布、HUD、覆蓋層、說明對話框的 DOM 結構  |
-| `src/style.css`                       | 全站樣式：機庫、HUD、按鈕、手機版面                           |
-| `src/app.js`                          | 頁面控制：輸入（鍵盤／觸控）、場景切換、HUD 更新、音效接線    |
-| `src/engine.js`                       | 遊戲引擎：主迴圈、碰撞、敵機波次、彈幕、掉落、計時、暫停凍結  |
-| `src/data.js`                         | 數值資料：戰機、武器、關卡、首領、升級卡                      |
-| `src/render.js`                       | 程序繪製：戰機投影、地形、敵機、彈幕、雷射、特效（Canvas 2D） |
-| `src/airframes.js`                    | 戰機三維網格：建模、投影、九種側傾姿態快取                    |
-| `src/audio.js`                        | 合成聲音：Web Audio 即時合成音效與背景音樂步進器，無音檔      |
-| `icon.svg`                            | 瀏覽器分頁圖示                                                |
-| `build.mjs`                           | 零依賴建置：複製 9 個運行檔至 `dist/`                         |
-| `tests/engine.test.mjs`               | 引擎單元測試：27 項（Node 內建 `node:test`）                  |
-| `package.json`                        | 專案資訊與 `test`／`build`／`format` 指令                     |
-| `metadata.json`                       | 結構化資訊：玩法、關卡數、授權、衍生出處                      |
-| `SPEC.md`                             | 完整規格書（對標 Thunderfall 1:1）                            |
-| `CHANGELOG.md`                        | 變更日誌（Keep a Changelog，繁體中文）                        |
-| `AGENTS.md`、`CLAUDE.md`、`GEMINI.md` | 三份同步的 AI Agent 專案規範                                  |
-| `.prettierrc`、`.prettierignore`      | Prettier 格式設定與排除路徑                                   |
-| `dist/`                               | 建置輸出（不進版控）                                          |
+| 檔案                                  | 用途                                                         |
+| ------------------------------------- | ------------------------------------------------------------ |
+| `index.html`                          | 遊戲入口：機庫、戰場畫布、HUD、覆蓋層、說明對話框的 DOM 結構 |
+| `src/style.css`                       | 全站樣式：機庫、HUD、按鈕、手機版面                          |
+| `src/app.js`                          | 頁面控制：輸入（鍵盤／觸控）、場景切換、HUD 更新、音效接線   |
+| `src/engine.js`                       | 遊戲引擎：主迴圈、碰撞、敵機波次、彈幕、掉落、計時、暫停凍結 |
+| `src/data.js`                         | 數值資料：戰機、武器、關卡、首領、升級卡                     |
+| `src/render.js`                       | 繪製筒倉：轉出口 `drawShip`＋組幀 `drawFrame`                |
+| `src/render/shared.js`                | 繪圖圖元與共用常數：多邊形／圓／光暈／裝甲板、色票、雜湊     |
+| `src/render/background.js`            | 五關背景：海港／峽谷／工廠／軌道／晝夜調度                   |
+| `src/render/units.js`                 | 作戰單位：尾焰、敵機、首領                                   |
+| `src/render/combat.js`                | 戰鬥物件：雷射光束、彈丸、補給、特效                         |
+| `src/airframes.js`                    | 戰機三維網格：建模、投影、九種側傾姿態快取                   |
+| `src/audio.js`                        | 合成聲音：Web Audio 即時合成音效與背景音樂步進器，無音檔     |
+| `icon.svg`                            | 瀏覽器分頁圖示                                               |
+| `build.mjs`                           | 零依賴建置：複製 9 個運行檔至 `dist/`                        |
+| `tests/engine.test.mjs`               | 引擎單元測試：27 項（Node 內建 `node:test`）                 |
+| `package.json`                        | 專案資訊與 `test`／`build`／`format` 指令                    |
+| `SPEC.md`                             | 完整規格書（對標 Thunderfall 1:1）                           |
+| `CHANGELOG.md`                        | 變更日誌（Keep a Changelog，繁體中文）                       |
+| `AGENTS.md`、`CLAUDE.md`、`GEMINI.md` | 三份同步的 AI Agent 專案規範                                 |
+| `.prettierrc`、`.prettierignore`      | Prettier 格式設定與排除路徑                                  |
+| `dist/`                               | 建置輸出（不進版控）                                         |

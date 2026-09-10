@@ -1,16 +1,21 @@
 import { WIDTH, HEIGHT, SHIPS, WEAPONS, STAGES, UPGRADES, STAGE_SECONDS, BOSS_AT, DROP_TTL } from './data.js';
 
+// 將數值限制在上下界之間（參數 v、lo、hi，回傳夾取後數值）。
 export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const TAU = Math.PI * 2;
+// 計算兩點間距離平方（用於碰撞與追蹤比大小，免開根號）。
 const dist2 = (a, b) => (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
+// 計算點到線段的最短距離（參數點座標與線段端點，回傳距離）。
 export function segmentDistance(px, py, x1, y1, x2, y2) {
   const dx = x2 - x1,
     dy = y2 - y1;
   const t = clamp(((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy || 1), 0, 1);
   return Math.hypot(px - x1 - t * dx, py - y1 - t * dy);
 }
+// 建立可重現的隨機數產生器（參數 seed，回傳取亂數的函式）。
 export function seededRandom(seed) {
   let state = seed >>> 0;
+  // 依整數混雜演算法產生下一個隨機數（無參數，回傳 0 至 1）。
   return () => {
     state += 0x6d2b79f5;
     let t = state;
@@ -19,6 +24,7 @@ export function seededRandom(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+// 依權重隨機挑選武器掉落種類（參數 random，回傳武器代號）。
 export function chooseWeapon(random) {
   let value = random();
   for (const [id, weapon] of Object.entries(WEAPONS)) {
@@ -29,11 +35,13 @@ export function chooseWeapon(random) {
 }
 
 export class Game {
+  // 建構遊戲實例並以種子初始化亂數狀態（參數 seed，回傳無）。
   constructor(seed = Date.now()) {
     this.seed = seed;
     this.rng = seededRandom(seed);
     this.reset();
   }
+  // 重置整局狀態與玩家初始數值（無參數，回傳無）。
   reset() {
     this.mode = 'hangar';
     this.time = 0;
@@ -80,12 +88,15 @@ export class Game {
       levels: { pulse: 1, laser: 0, arc: 0, nova: 0 },
     };
   }
+  // 推入待前端消費的遊戲事件（參數 type、details，回傳無）。
   emit(type, details = {}) {
     if (this.events.length < 160) this.events.push({ type, ...details });
   }
+  // 取出並清空事件佇列（無參數，回傳事件陣列）。
   drainEvents() {
     return this.events.splice(0);
   }
+  // 依機體與難度開局並進入指定關卡（參數 shipId、difficulty、practiceStage，回傳無）。
   start({ shipId = 0, difficulty = 'normal', practiceStage = null } = {}) {
     this.reset();
     this.rng = seededRandom(this.seed);
@@ -109,6 +120,7 @@ export class Game {
     this.mode = 'playing';
     this.enterStage(this.practice ? practiceStage : 0);
   }
+  // 載入指定關卡並重置波次與玩家位置（參數 index，回傳無）。
   enterStage(index) {
     this.stageIndex = index;
     this.stageTime = 0;
@@ -134,18 +146,21 @@ export class Game {
     this.player.shield = this.player.maxShield;
     this.emit('stage', { index });
   }
+  // 暫停進行中的遊戲（無參數，回傳無）。
   pause() {
     if (this.mode === 'playing') {
       this.mode = 'paused';
       this.emit('pause');
     }
   }
+  // 從暫停恢復為遊玩中（無參數，回傳無）。
   resume() {
     if (this.mode === 'paused') {
       this.mode = 'playing';
       this.emit('resume');
     }
   }
+  // 接關續玩並扣分重置本關狀態（無參數，回傳是否成功）。
   continueRun() {
     if (this.mode !== 'gameover' || this.continues >= 3) return false;
     this.continues++;
@@ -158,6 +173,7 @@ export class Game {
     this.enterStage(this.stageIndex);
     return true;
   }
+  // 套用過關三選一升級並前進下一關（參數 id，回傳是否成功）。
   selectUpgrade(id) {
     if (this.mode !== 'upgrade' || !this.choices.some((c) => c.id === id)) return false;
     const p = this.player;
@@ -177,6 +193,7 @@ export class Game {
     this.enterStage(this.stageIndex + 1);
     return true;
   }
+  // 洗牌並抽出三張升級候選（無參數，回傳無）。
   makeChoices() {
     const options = UPGRADES.filter((u) => u.id !== 'wingmen' || this.upgrades.wingmen < 2);
     for (let i = options.length - 1; i > 0; i--) {
@@ -185,6 +202,7 @@ export class Game {
     }
     this.choices = options.slice(0, 3);
   }
+  // 新增爆炸、光環或浮字等視覺特效（參數 type、x、y、color、size、text，回傳無）。
   fx(type, x, y, color = '#ffe0a0', size = 20, text = '') {
     if (this.effects.length >= 180) this.effects.shift();
     this.effects.push({
@@ -198,9 +216,11 @@ export class Game {
       text,
     });
   }
+  // 累積超載能量條並吃反應爐加成（參數 n，回傳無）。
   addCharge(n) {
     this.player.overdrive = Math.min(100, this.player.overdrive + n * (1 + this.upgrades.reactor * 0.3));
   }
+  // 引爆震盪炸彈清彈並重創全場敵機（無參數，回傳是否成功）。
   bomb() {
     const p = this.player;
     if (this.mode !== 'playing' || !p.bombs) return false;
@@ -215,6 +235,7 @@ export class Game {
     this.emit('bomb');
     return true;
   }
+  // 開啟超載模式清空彈幕並強化火力（無參數，回傳是否成功）。
   overdrive() {
     const p = this.player;
     if (this.mode !== 'playing' || p.overdrive < 100 || p.overdriveTime > 0) return false;
@@ -227,6 +248,7 @@ export class Game {
     this.emit('overdrive');
     return true;
   }
+  // 以子步進推進遊戲時間並維持碰撞穩定（參數 dt、input，回傳無）。
   update(dt, input = {}) {
     if (this.mode !== 'playing' || !Number.isFinite(dt) || dt <= 0) return;
     // 子步進在慢速／手機幀下保持掃掠碰撞與穩定彈道。
@@ -237,6 +259,7 @@ export class Game {
       remaining -= h;
     }
   }
+  // 推進固定步長的移動、開火、波次與清理（參數 dt、input，回傳無）。
   step(dt, input) {
     this.time += dt;
     this.stageTime += dt;
@@ -299,6 +322,7 @@ export class Game {
     )
       this.completeStage();
   }
+  // 發射一顆玩家子彈並套用傷害加成（參數座標、角度、種類、傷害、速度、半徑，回傳無）。
   addShot(x, y, angle, type, damage, speed = 660, r = 4, extra = {}) {
     if (this.shots.length >= 320) return;
     const p = this.player;
@@ -318,6 +342,7 @@ export class Game {
       ...extra,
     });
   }
+  // 依當前武器與等級產生玩家彈幕並節流音效（無參數，回傳無）。
   firePlayer() {
     const p = this.player,
       lv = p.weaponLevel;
@@ -348,6 +373,7 @@ export class Game {
       this.emit('shot', { weapon: p.weapon });
     }
   }
+  // 依種類生成敵機並套用關卡血量加成（參數 type、x、y、extra，回傳敵機或空值）。
   spawnEnemy(type, x, y = -35, extra = {}) {
     if (this.enemies.length >= 65) return null;
     const specs = {
@@ -383,6 +409,7 @@ export class Game {
     this.enemies.push(e);
     return e;
   }
+  // 依關卡與波次編號生成一波雜兵隊形（無參數，回傳無）。
   spawnWave() {
     const s = this.stageIndex,
       wave = this.waveIndex++,
@@ -416,6 +443,7 @@ export class Game {
       if (s >= 3) this.spawnEnemy('carrier', 240, -180);
     }
   }
+  // 生成本關首領並清空場上彈幕保留運輸機（無參數，回傳無）。
   spawnBoss() {
     this.bossSpawned = true;
     this.bullets.length = 0;
@@ -446,6 +474,7 @@ export class Game {
     });
     this.emit('boss', { name: stage.bossName });
   }
+  // 發射一顆敵方子彈並套用難度加速（參數座標、角度、速度、種類，回傳無）。
   bullet(x, y, angle, speed = 145, type = 'aim', extra = {}) {
     if (this.bullets.length >= 720) return;
     this.bullets.push({
@@ -466,9 +495,11 @@ export class Game {
       ...extra,
     });
   }
+  // 以扇形一次發射多顆敵方子彈（參數座標、基準角、數量、散角、速度，回傳無）。
   fan(x, y, angle, count, spread, speed, type = 'aim', extra = {}) {
     for (let i = 0; i < count; i++) this.bullet(x, y, angle + (i - (count - 1) / 2) * spread, speed, type, extra);
   }
+  // 生成一道帶預警時間的敵方雷射（參數 x、y、angle，回傳無）。
   laser(x, y, angle, extra = {}) {
     if (this.beams.length >= 14) return;
     this.beams.push({
@@ -485,6 +516,7 @@ export class Game {
       ...extra,
     });
   }
+  // 更新敵機移動、開火並檢查衝撞玩家（參數 dt，回傳無）。
   updateEnemies(dt) {
     for (const e of this.enemies) {
       if (e.dead) continue;
@@ -537,6 +569,7 @@ export class Game {
       if (this.mode === 'playing' && dist2(e, this.player) < (e.r * 0.65 + 5) ** 2) this.hitPlayer();
     }
   }
+  // 依關卡與階段施放首領彈幕套路（參數 e，回傳無）。
   bossPattern(e) {
     const a = Math.atan2(this.player.y - e.y, this.player.x - e.x),
       turn = e.pattern++ % 2 ? -1 : 1;
@@ -570,6 +603,7 @@ export class Game {
       if (e.pattern % 2 === 0) this.fan(e.x, e.y + 30, a, 5, 0.11, 210, 'fast');
     }
   }
+  // 依關卡施放首領雷射攻擊組合（參數 e，回傳無）。
   bossLasers(e) {
     const a = Math.atan2(this.player.y - e.y, this.player.x - e.x);
     if (e.stage === 0) this.laser(e.x, e.y + 35, a, { width: 18, warn: 1.2, duration: 0.8 });
@@ -589,6 +623,7 @@ export class Game {
       for (const side of [-1, 0, 1])
         this.laser(e.x + side * 55, e.y + 30, a + side * 0.42, { width: 17, warn: 1.35, duration: 0.85 });
   }
+  // 扣敵機血量並處理首領轉階段與擊殺結算（參數 e、damage，回傳無）。
   damageEnemy(e, damage) {
     if (e.dead) return;
     if (e.type === 'boss' && (e.age < 2 || e.transition > 0)) return;
@@ -643,6 +678,7 @@ export class Game {
       this.emit('kill');
     }
   }
+  // 更新玩家子彈含追蹤、爆炸與穿透判定（參數 dt，回傳無）。
   updateShots(dt) {
     for (const shot of this.shots) {
       shot.age += dt;
@@ -689,6 +725,7 @@ export class Game {
       (s) => !s.dead && s.age < 4 && s.y > -50 && s.y < HEIGHT + 50 && s.x > -60 && s.x < WIDTH + 60
     );
   }
+  // 結算玩家受擊扣盾扣血或觸發自動炸彈與終局（無參數，回傳無）。
   hitPlayer() {
     const p = this.player;
     if (p.invulnerable > 0 || this.mode !== 'playing') return;
@@ -710,6 +747,7 @@ export class Game {
       this.emit('gameover');
     }
   }
+  // 更新敵彈含擦彈加分與分裂子彈排程（參數 dt，回傳無）。
   updateBullets(dt) {
     const pending = [];
     for (const b of this.bullets) {
@@ -743,6 +781,7 @@ export class Game {
     );
     for (const b of pending) this.fan(b.x, b.y, b.age, 8, TAU / 8, 140, 'drift', { turn: 0.2 });
   }
+  // 更新敵方雷射預警、掃射與命中判定（參數 dt，回傳無）。
   updateBeams(dt) {
     for (const beam of this.beams) {
       beam.age += dt;
@@ -761,6 +800,7 @@ export class Game {
     }
     this.beams = this.beams.filter((b) => b.age < b.warn + b.duration);
   }
+  // 在場內生成武器或補給掉落物（參數 x、y、kind、weapon，回傳無）。
   spawnDrop(x, y, kind = 'weapon', weapon = null) {
     if (this.drops.length > 24) this.drops.shift();
     this.drops.push({
@@ -775,6 +815,7 @@ export class Game {
       phase: this.rng() * TAU,
     });
   }
+  // 更新掉落物漂移、磁吸、反彈與拾取（參數 dt，回傳無）。
   updateDrops(dt) {
     const p = this.player;
     for (const drop of this.drops) {
@@ -804,6 +845,7 @@ export class Game {
     }
     this.drops = this.drops.filter((d) => !d.dead);
   }
+  // 拾取掉落並套用武器升級或補給效果（參數 drop，回傳無）。
   collectDrop(drop) {
     const p = this.player;
     drop.dead = true;
@@ -828,6 +870,7 @@ export class Game {
     this.fx('text', p.x, p.y - 40, WEAPONS[drop.weapon]?.color || '#bcffe7', 17, label);
     this.emit('pickup', { label });
   }
+  // 結算過關獎分並轉勝利或升級選牌（無參數，回傳無）。
   completeStage() {
     this.score += 3000 + this.player.health * 300;
     this.bullets.length = 0;

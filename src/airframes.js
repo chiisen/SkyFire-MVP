@@ -1,14 +1,20 @@
 // 網格建模的戰機，投影至 Canvas 2D。無下載模型或貼圖。
 // x：翼展，y：機頭至機尾，z：機翼上方高度。模擬座標維持不變。
 const TAU = Math.PI * 2;
+// 夾取數值於上下界，避免姿態與著色參數越界。
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+// 正規化向量以求面法線，支撐光照與投影計算。
 const unit = (v) => {
   const n = Math.hypot(...v) || 1;
   return v.map((x) => x / n);
 };
+// 外積求面法線方向，判斷多邊形朝向與可見性。
 const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+// 向量相減取得邊向量，作為法線與平面計算基礎。
 const sub = (a, b) => a.map((v, i) => v - b[i]);
+// 內積計算光照夾角，驅動漫反射與鏡面反射強度。
 const dot = (a, b) => a.reduce((sum, v, i) => sum + v * b[i], 0);
+// 建立材質參數，統一顏色、亮光與發光屬性。
 const material = (rgb, shine = 0.25, glow = false) => ({ rgb, shine, glow });
 const M = {
   silver: material([211, 218, 225], 0.8),
@@ -25,11 +31,13 @@ const M = {
   hot: material([255, 87, 64], 0.4, true),
 };
 
+// 新增多邊形面片並計算法線，構成機體網格單元。
 function face(model, points, mat, edge = true) {
   const normal = unit(cross(sub(points[1], points[0]), sub(points[2], points[0])));
   model.faces.push({ points, normal, mat, edge });
 }
 
+// 以倒角輪廓擠出頂面斜邊與側壁，塑造厚重裝甲結構。
 // 倒角裝甲：獨立頂面、斜邊框與較暗的垂直側壁。
 function armor(model, contour, bottom, top, mat, bevel = 0.1, map = (p) => p) {
   let points = contour.map((p) => [...p]);
@@ -50,6 +58,7 @@ function armor(model, contour, bottom, top, mat, bevel = 0.1, map = (p) => p) {
   }
 }
 
+// 以七邊形截面串接機身縱軸，塑造弧形肩線與體積。
 // 七邊形縱向截面賦予機身弧形肩線與真實體積。
 function fuselage(model, x, sections, mat) {
   const rings = sections.map(([y, w, h, z]) =>
@@ -72,11 +81,13 @@ function fuselage(model, x, sections, mat) {
   face(model, [...rings.at(-1)].reverse(), mat);
 }
 
+// 新增單面貼花並修正鏡像繞序，保持面向鏡頭。
 function panel(model, points, mat) {
   // 鏡像頂部貼花會反轉繞序；保持雙翼朝向鏡頭。
   if (cross(sub(points[1], points[0]), sub(points[2], points[0]))[2] < 0) points = [...points].reverse();
   face(model, points, mat, false);
 }
+// 將平面輪廓提升至指定高度，生成水平貼片。
 function flat(model, points, z, mat) {
   panel(
     model,
@@ -84,6 +95,7 @@ function flat(model, points, z, mat) {
     mat
   );
 }
+// 以矩形輪廓快速生成水平面板，用於細節裝飾。
 function rect(model, x, y, w, h, z, mat) {
   flat(
     model,
@@ -97,6 +109,7 @@ function rect(model, x, y, w, h, z, mat) {
     mat
   );
 }
+// 左右鏡像生成裝甲，對稱建構雙翼與雙側結構。
 function mirrored(model, points, bottom, top, mat, bevel = 0.08) {
   for (const s of [-1, 1])
     armor(
@@ -108,6 +121,7 @@ function mirrored(model, points, bottom, top, mat, bevel = 0.08) {
       bevel
     );
 }
+// 以斜切裝甲建構垂直尾翼，支撐側傾偏航造型。
 function fin(model, x, y, height, mat, cant = 0) {
   armor(
     model,
@@ -124,6 +138,7 @@ function fin(model, x, y, height, mat, cant = 0) {
     (p) => [p[2] + p[1] * cant, p[0], p[1]]
   );
 }
+// 組裝引擎艙、進氣道與排氣環，並登記尾焰位置。
 function engine(model, x, y, width, mat) {
   fuselage(
     model,
@@ -175,6 +190,7 @@ function engine(model, x, y, width, mat) {
   }
   model.engines.push([x, y + 31, 1, width * 0.62]);
 }
+// 組裝細長砲管與基座，延伸機頭火力造型。
 function cannon(model, x, y, mat, length = 31) {
   fuselage(
     model,
@@ -197,6 +213,7 @@ function cannon(model, x, y, mat, length = 31) {
   );
   for (let i = 0; i < 3; i++) rect(model, x - 1.8, y - length + 6 + i * 3, 3.6, 1, 5.1, M.steel);
 }
+// 堆疊深色座艙與亮面罩體，塑造反光座艙罩。
 function canopy(model, long = false) {
   const nose = long ? -46 : -40;
   fuselage(
@@ -243,6 +260,7 @@ function canopy(model, long = false) {
     M.dark
   );
 }
+// 繪製機翼條紋、編號與扣件，標示機體身份。
 function markings(model, s, x, y, z, id) {
   const X = (v) => s * (x + v);
   flat(
@@ -274,6 +292,7 @@ function markings(model, s, x, y, z, id) {
       );
     }
 }
+// 疊加深色底框與暗色漆面，模擬維修艙蓋。
 function servicePanel(model, points, z, paint) {
   const center = points.reduce((a, p) => [a[0] + p[0] / points.length, a[1] + p[1] / points.length], [0, 0]);
   flat(model, points, z, M.dark);
@@ -288,6 +307,7 @@ function servicePanel(model, points, z, paint) {
   );
 }
 
+// 依機體編號組裝三款戰機網格，並回傳模型資料。
 function makeAirframe(id) {
   const model = { faces: [], engines: [], id };
   const paint = [M.red, M.blue, M.gold][id];
@@ -615,6 +635,7 @@ const AIRFRAMES = [0, 1, 2].map(makeAirframe);
 const LIGHT = unit([-0.55, -0.65, 1]),
   HALF = unit([LIGHT[0], LIGHT[1], LIGHT[2] + 1]);
 
+// 依側傾與展示模式建構滾轉俯仰偏航投影變換。
 function camera(bank, showcase, time) {
   const roll = showcase ? -0.3 + Math.sin(time * 0.45) * 0.14 : bank * 0.48;
   const pitch = showcase ? 0.53 : 0.18,
@@ -632,12 +653,14 @@ function camera(bank, showcase, time) {
     return [xx * cy - yy * sy, xx * sy + yy * cy, y * sp + zz * cp];
   };
 }
+// 依面法線計算漫反射與鏡面光，輸出填色字串。
 function shade(mat, normal, tint = 0) {
   if (mat.glow) return `rgb(${mat.rgb.join(',')})`;
   const diffuse = 0.42 + Math.max(0, dot(normal, LIGHT)) * 0.64;
   const spec = Math.pow(Math.max(0, dot(normal, HALF)), 22) * mat.shine * 155;
   return `rgb(${mat.rgb.map((v, i) => Math.round(clamp(v * diffuse + spec + tint + [1, 3, 6][i], 0, 255))).join(',')})`;
 }
+// 背面剔除並依深度排序填色，將網格投影至畫布。
 function paintMesh(c, model, transform) {
   const visible = [];
   for (const f of model.faces) {
@@ -680,6 +703,7 @@ function paintMesh(c, model, transform) {
 
 // 每具機體快取九種側傾姿態：記憶體有界，戰鬥中只需一次貼圖。
 const spriteCache = new Map();
+// 快取九種側傾姿態點陣圖，加速戰鬥中繪製。
 function sprite(model, bank) {
   if (typeof OffscreenCanvas === 'undefined') return null;
   const pose = Math.round(clamp(bank, -1, 1) * 4),
@@ -694,6 +718,7 @@ function sprite(model, bank) {
   spriteCache.set(key, canvas);
   return canvas;
 }
+// 依推力與閃爍繪製漸層尾焰，呈現引擎噴流。
 function exhaust(c, model, transform, time, boost, showcase) {
   for (const [x, y, z, w] of model.engines) {
     const length = (showcase ? 26 : 35) * (boost ? 1.6 : 1),
@@ -737,6 +762,7 @@ function exhaust(c, model, transform, time, boost, showcase) {
   }
 }
 
+// 平移縮放並疊加陰影尾焰機身，輸出完整戰機畫面。
 /** Faceted 3D hulls; scale=1 preserves the existing gameplay hit core and positioning. */
 export function drawAirframe(
   c,
