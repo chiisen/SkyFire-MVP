@@ -1,0 +1,37 @@
+# SkyFire-MVP .gitignore
+
+# ── 建置輸出 ──
+# npm run build 產生的靜態發佈檔，不進版控
+dist/
+
+# ── Node.js ──
+# 套件目錄（本專案僅用內建模組，正常情況下不會產生）
+node_modules/
+# npm 錯誤日誌
+npm-debug.log*
+
+# ── 測試與覆蓋率 ──
+# 測試覆蓋率報告輸出
+coverage/
+
+# ── 環境設定 ──
+# 本機環境變數（如 Vercel Token 等機密），絕不進版控
+.env
+.env.local
+
+# ── Vercel ──
+# Vercel CLI 本機快取
+.vercel/
+
+# ── 作業系統 ──
+# Windows 縮圖快取
+Thumbs.db
+Desktop.ini
+# macOS 資料夾屬性檔
+.DS_Store
+
+# ── 編輯器 ──
+# VS Code 工作區個人設定
+.vscode/*
+# JetBrains 系列
+.idea/
