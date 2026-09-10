@@ -14,3 +14,5 @@
 - 可遊玩 MVP：`index.html`、`app.js`、`engine.js`、`data.js`、`render.js`、`airframes.js`、`audio.js`、`style.css`、`icon.svg`（Thunderfall CC0-1.0 程式碼級複用，繁中在地化並換 SkyFire 品牌）
 - 引擎單元測試 `tests/engine.test.mjs`：27 項全綠；`build.mjs` 零依賴建置輸出 `dist/`；`metadata.json` 結構化資訊
 - Prettier：`.prettierrc`、`.prettierignore`、`format` / `format:check` 指令；三份規範同步要求註解一律繁體中文
+- 程式碼搬進 `src/`（`index.html` 參照改 `./src/`，`build.mjs` 輸出鏡像佈局，測試 import 同步）
+- 測試與註解繁中化；`README.md` 補啟動、玩法、操作表、建置說明與檔案用途表

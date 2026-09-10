@@ -229,7 +229,7 @@ export class Game {
   }
   update(dt, input = {}) {
     if (this.mode !== 'playing' || !Number.isFinite(dt) || dt <= 0) return;
-    // Substeps retain swept collisions and stable patterns on slow/mobile frames.
+    // 子步進在慢速／手機幀下保持掃掠碰撞與穩定彈道。
     let remaining = Math.min(dt, 0.12);
     while (remaining > 1e-8 && this.mode === 'playing') {
       const h = Math.min(remaining, 1 / 60);
@@ -291,7 +291,7 @@ export class Game {
     });
     this.effects = this.effects.filter((e) => e.age < e.ttl);
     this.enemies = this.enemies.filter((e) => !e.dead && e.y < HEIGHT + 90 && e.x > -160 && e.x < WIDTH + 160);
-    // Late boss kills still grant a full active-time window to collect their drops.
+    // 晚擊殺首領仍給完整有效時間拾取掉落。
     if (
       this.mode === 'playing' &&
       this.bossDefeated &&
@@ -594,7 +594,7 @@ export class Game {
     if (e.type === 'boss' && (e.age < 2 || e.transition > 0)) return;
     e.hp -= damage;
     e.flash = 0.065;
-    // Phase barriers stop a single burst from skipping the flagship's mechanics.
+    // 階段屏障阻止單次爆發跳過旗艦機制。
     if (e.type === 'boss' && e.phase < 3) {
       const threshold = e.maxHp * (e.phase === 1 ? 0.65 : 0.3);
       if (e.hp <= threshold) {

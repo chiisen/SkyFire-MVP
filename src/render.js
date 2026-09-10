@@ -1,7 +1,7 @@
 import { drawAirframe as drawShip } from './airframes.js';
 export { drawShip };
 
-// Original procedural artwork. All coordinates use the game's 480 × 800 stage.
+// 原創程序美術。座標皆用遊戲 480×800 舞台。
 const W = 480,
   H = 800,
   TAU = Math.PI * 2;
@@ -414,7 +414,7 @@ function background(c, stage, time) {
   else if (stage === 1 || stage === 2) canyon(c, time, stage === 2);
   else if (stage === 3) factory(c, time);
   else orbit(c, time);
-  // Broad shadows keep the bullet lanes calm while preserving visible terrain.
+  // 寬陰影讓彈道沉穩，同時保留可見地形。
   const shade = c.createLinearGradient(0, 0, W, 0);
   shade.addColorStop(0, '#03091366');
   shade.addColorStop(0.2, 'transparent');
@@ -663,7 +663,7 @@ function boss(c, e, t) {
   c.save();
   c.translate(e.x, e.y);
   c.scale(s, s);
-  // Different major silhouettes remain identifiable through dense bullet patterns.
+  // 主要剪影各異，密集彈幕中仍可辨識。
   if (stage === 0)
     poly(
       c,
@@ -890,7 +890,7 @@ function boss(c, e, t) {
     );
   }
   if ((e.age ?? 2) < 2 || e.transition > 0) {
-    // A temporary outlined field communicates blocked damage without masking hazards.
+    // 短暫描邊力場傳達格擋傷害，不遮擋危險訊息。
     const entering = (e.age ?? 2) < 2,
       progress = entering ? clamp(e.age / 2) : clamp(1 - e.transition / 1.15);
     poly(
@@ -946,7 +946,7 @@ function boss(c, e, t) {
     c.font = '600 13px system-ui, sans-serif';
     c.textAlign = 'center';
     c.textBaseline = 'middle';
-    c.fillText(entering ? '入场护盾 · 暂时免伤' : '相位护盾 · 暂时免伤', 0, 103);
+    c.fillText(entering ? '入場護盾 · 暫時免傷' : '相位護盾 · 暫時免傷', 0, 103);
     c.fillStyle = '#93c3ff';
     c.fillRect(-60, 117, 120 * progress, 2);
   }
@@ -1145,7 +1145,7 @@ function effect(c, e, reduced) {
   c.restore();
 }
 
-/** Paint the game without owning simulation, canvas sizing, DOM, or timers. */
+/** 只負責繪製，不持有模擬、畫布尺寸、DOM 或計時器。 */
 export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {}) {
   const t = game.time || 0,
     stage = clamp(game.stageIndex | 0, 0, 4),
@@ -1244,7 +1244,7 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
       boost: player.overdriveTime > 0,
     });
     c.globalAlpha = 1;
-    // The visible centre is the small gameplay hitbox, not the wing silhouette.
+    // 可見中心是小受擊判定，而非機翼剪影。
     circle(c, player.x, player.y, 4.4, '#061121', '#cefcff', 1.1);
     circle(c, player.x, player.y, 1.8, '#e5ffff');
   }

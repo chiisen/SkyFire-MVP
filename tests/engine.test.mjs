@@ -1,14 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { Game, segmentDistance, chooseWeapon, seededRandom } from '../engine.js';
-import { WIDTH, HEIGHT, SHIPS, WEAPONS, STAGES, UPGRADES, STAGE_SECONDS, BOSS_AT, DROP_TTL } from '../data.js';
+import { Game, segmentDistance, chooseWeapon, seededRandom } from '../src/engine.js';
+import { WIDTH, HEIGHT, SHIPS, WEAPONS, STAGES, UPGRADES, STAGE_SECONDS, BOSS_AT, DROP_TTL } from '../src/data.js';
 
 const FRAME = 1 / 60;
 const near = (actual, expected, tolerance = 1e-7) =>
   assert.ok(Math.abs(actual - expected) <= tolerance, `Expected ${actual} to be within ${tolerance} of ${expected}`);
 
-// Keep the real update loop, collision methods, clock and boss lifecycle.
-// These fixtures suppress incidental waves/shots to isolate the rule under test.
+// 使用真實主迴圈、碰撞、時鐘與首領生命週期。
+// 夾具壓住雜散波次與射擊，只隔離待測規則。
 function quietGame(options = {}) {
   const game = new Game(0x5448554e);
   game.start(options);
@@ -54,7 +54,7 @@ function defeatBossThroughPhases(game, boss) {
   assert.equal(boss.dead, true);
 }
 
-test('campaign configuration has five two-minute stages and four weighted weapon types', () => {
+test('戰役配置：五關各 120 秒、四種武器有權重', () => {
   assert.equal(STAGES.length, 5);
   assert.equal(STAGE_SECONDS * STAGES.length, 600);
   assert.equal(BOSS_AT, 88);
@@ -76,7 +76,7 @@ test('campaign configuration has five two-minute stages and four weighted weapon
   assert.deepEqual(Array.from({ length: 20 }, a), Array.from({ length: 20 }, b));
 });
 
-test('three starting ships have real durability, speed and weapon differences', () => {
+test('三種起始戰機的耐久、速度與武器確實不同', () => {
   const games = SHIPS.map((ship) => quietGame({ shipId: ship.id }));
   assert.deepEqual(
     games.map((game) => [game.player.health, game.player.shield, game.player.bombs]),
@@ -98,7 +98,7 @@ test('three starting ships have real durability, speed and weapon differences', 
   near(games[2].shots[0].damage, 90);
 });
 
-test('movement keeps the hit core inside the playable area for keyboard and pointer input', () => {
+test('鍵盤與觸控移動皆把受擊核心限制在可玩區內', () => {
   const game = quietGame();
   advance(game, 5, { dx: -1, dy: -1 });
   assert.equal(game.player.x, 18);
@@ -108,7 +108,7 @@ test('movement keeps the hit core inside the playable area for keyboard and poin
   assert.equal(game.player.y, HEIGHT - 35);
 });
 
-test('weapon drops remain available until about ten active seconds and then expire', () => {
+test('武器補給約 10 秒有效時間後消失', () => {
   const game = quietGame();
   game.spawnDrop(80, 130, 'weapon', 'arc');
   Object.assign(game.drops[0], { vx: 35, vy: 8, phase: 0 });
@@ -120,7 +120,7 @@ test('weapon drops remain available until about ten active seconds and then expi
   assert.equal(game.player.weapon, 'pulse', 'Expiry must not equip an uncollected weapon');
 });
 
-test('drops spawn on screen and reflect from all four playable boundaries', () => {
+test('補給生成於場內並從四邊反彈', () => {
   const cases = [
     { x: 25, y: 200, vx: -60, vy: 0, axis: 'x', velocity: 'vx', sign: 1 },
     { x: WIDTH - 25, y: 200, vx: 60, vy: 0, axis: 'x', velocity: 'vx', sign: -1 },
@@ -141,7 +141,7 @@ test('drops spawn on screen and reflect from all four playable boundaries', () =
   }
 });
 
-test('pause freezes the complete gameplay state, including drops, warnings, effects and cooldowns', () => {
+test('暫停凍結完整遊戲狀態：補給、預警、特效與冷卻', () => {
   const game = quietGame();
   game.player.invulnerable = 2;
   game.player.overdriveTime = 6;
@@ -169,7 +169,7 @@ test('pause freezes the complete gameplay state, including drops, warnings, effe
   assert.ok(game.drops[0].age > 0.1);
 });
 
-test('enemy laser warnings are harmless and the active beam damages the hit core', () => {
+test('雷射預警無害、生效光束才傷受擊核心', () => {
   const game = quietGame();
   game.laser(game.player.x, 120, Math.PI / 2, { warn: 1, duration: 0.6, width: 14 });
   const shield = game.player.shield;
@@ -183,7 +183,7 @@ test('enemy laser warnings are harmless and the active beam damages the hit core
   assert.equal(game.player.shield, shield - 1, 'Hit invulnerability prevents repeated damage from one beam');
 });
 
-test('drift bullets curve over time rather than moving along a fixed line', () => {
+test('漂移彈隨時間彎曲而非走直線', () => {
   const game = quietGame();
   game.bullet(100, 100, Math.PI / 2, 100, 'drift', { turn: 0.4 });
   advance(game, 0.5);
@@ -193,7 +193,7 @@ test('drift bullets curve over time rather than moving along a fixed line', () =
   near(bullet.angle, Math.PI / 2 + 0.2);
 });
 
-test('segment geometry handles endpoints, degenerate segments and diagonal projection', () => {
+test('線段幾何：端點、退化線段與斜向投影', () => {
   near(segmentDistance(3, 4, 0, 0, 0, 0), 5);
   near(segmentDistance(-3, 4, 0, 0, 10, 0), 5);
   near(segmentDistance(13, 4, 0, 0, 10, 0), 5);
@@ -201,7 +201,7 @@ test('segment geometry handles endpoints, degenerate segments and diagonal proje
   near(segmentDistance(3, 0, 0, 0, 3, 3), 3 / Math.sqrt(2));
 });
 
-test('fast bullets and player shots use swept collision instead of tunneling', () => {
+test('高速子彈與玩家射擊用掃掠碰撞避免穿透', () => {
   const game = quietGame();
   game.bullet(game.player.x, game.player.y - 90, Math.PI / 2, 12000);
   game.update(FRAME);
@@ -214,7 +214,7 @@ test('fast bullets and player shots use swept collision instead of tunneling', (
   assert.equal(game.kills, 1);
 });
 
-test('near misses graze once without damaging the player', () => {
+test('擦彈只計一次且不傷玩家', () => {
   const game = quietGame();
   game.bullet(game.player.x + 18, game.player.y - 50, Math.PI / 2, 100);
   advance(game, 0.8);
@@ -224,7 +224,7 @@ test('near misses graze once without damaging the player', () => {
   assert.ok(game.player.overdrive > 20);
 });
 
-test('weapon pickups equip all four types, level up, remember levels and cap at five', () => {
+test('四種武器可裝備、可升級、可記等級、上限 Lv.5', () => {
   const game = quietGame();
   for (const weapon of Object.keys(WEAPONS)) {
     pickup(game, 'weapon', weapon);
@@ -247,7 +247,7 @@ test('weapon pickups equip all four types, level up, remember levels and cap at 
   assert.equal(game.player.bombs, 5);
 });
 
-test('four equipped weapons create distinct spread, piercing, homing and explosive projectiles', () => {
+test('四種武器彈道各異：散射、穿透、追蹤、爆裂', () => {
   const game = quietGame();
   for (const weapon of Object.keys(WEAPONS)) {
     game.player.weapon = weapon;
@@ -265,9 +265,9 @@ test('four equipped weapons create distinct spread, piercing, homing and explosi
   }
 });
 
-test('weapon drops remain probabilistic while carriers and the dry-streak guarantee supply one', () => {
+test('武器掉落有機率，運輸機與連敗保底會補給', () => {
   const game = quietGame();
-  // A valid high random draw intentionally misses both the ordinary weapon and repair rolls.
+  // 高隨機值刻意同時落空普通武器與修復判定。
   game.rng = () => 0.9;
   for (let i = 0; i < 12; i++) {
     const enemy = game.spawnEnemy('scout', 100, 200);
@@ -284,7 +284,7 @@ test('weapon drops remain probabilistic while carriers and the dry-streak guaran
   assert.equal(game.drops.length, 2);
 });
 
-test('upgrades reject illegal calls and offer three unique choices with capped wingmen excluded', () => {
+test('升級拒絕非法呼叫；三選一不重複且僚機滿排除', () => {
   const game = quietGame();
   const before = JSON.stringify(game);
   assert.equal(game.selectUpgrade('damage'), false);
@@ -311,7 +311,7 @@ test('upgrades reject illegal calls and offer three unique choices with capped w
   assert.equal(game.selectUpgrade(chosen), false, 'The same reward cannot be redeemed twice');
 });
 
-test('each legal upgrade applies its promised category and respects resource caps', () => {
+test('每種合法升級生效且遵守資源上限', () => {
   for (const upgrade of UPGRADES) {
     const game = quietGame();
     game.mode = 'upgrade';
@@ -346,7 +346,7 @@ test('each legal upgrade applies its promised category and respects resource cap
   }
 });
 
-test('stage-clear resupply is separate from the hull and bomb card rewards', () => {
+test('過關固定補給與機體炸彈卡片收益分開計算', () => {
   const results = {};
   for (const id of ['damage', 'hull', 'bomb']) {
     const game = quietGame();
@@ -362,7 +362,7 @@ test('stage-clear resupply is separate from the hull and bomb card rewards', () 
   assert.deepEqual(results.bomb, { health: 3, bombs: 3 });
 });
 
-test('magnet upgrades pull a pickup from farther away and wingmen launch independent missiles', () => {
+test('吸附升級拉遠拾取距離，僚機獨立發射飛彈', () => {
   const withoutMagnet = quietGame(),
     withMagnet = quietGame();
   withMagnet.upgrades.magnet = 1;
@@ -381,7 +381,7 @@ test('magnet upgrades pull a pickup from farther away and wingmen launch indepen
   assert.ok(game.shots[0].x < game.player.x && game.shots[1].x > game.player.x);
 });
 
-test('normal mode last-hit protection consumes a bomb while arcade mode can end the run', () => {
+test('標準模式致命一擊耗炸彈保命，街機模式會終局', () => {
   for (const difficulty of ['normal', 'arcade']) {
     const game = quietGame({ difficulty });
     game.player.health = 1;
@@ -402,7 +402,7 @@ test('normal mode last-hit protection consumes a bomb while arcade mode can end 
   }
 });
 
-test('bosses are protected throughout their two-second entrance', () => {
+test('首領入場 2 秒無敵', () => {
   const game = quietGame();
   game.player.invulnerable = 1000;
   game.spawnBoss();
@@ -421,7 +421,7 @@ test('bosses are protected throughout their two-second entrance', () => {
   assert.equal(boss.phase, 1);
 });
 
-test('boss phase barriers cannot be skipped by burst damage and protect their full transition', () => {
+test('爆發傷害跳不過階段屏障且屏障走滿全程', () => {
   const game = quietGame();
   game.player.invulnerable = 1000;
   game.spawnBoss();
@@ -464,7 +464,7 @@ test('boss phase barriers cannot be skipped by burst damage and protect their fu
   );
 });
 
-test('interceptor waves alternate left-to-right and right-to-left across wave cycles', () => {
+test('攔截機波次左右交替進場', () => {
   const game = quietGame();
   const entries = [];
   for (const waveIndex of [1, 5, 9, 13]) {
@@ -487,7 +487,7 @@ test('interceptor waves alternate left-to-right and right-to-left across wave cy
   ]);
 });
 
-test('an undefeated boss blocks stage advancement beyond the two-minute minimum', () => {
+test('首領未死且未滿 120 秒不得過關', () => {
   const game = quietGame();
   game.bossSpawned = false;
   game.player.invulnerable = 1000;
@@ -514,7 +514,7 @@ test('an undefeated boss blocks stage advancement beyond the two-minute minimum'
   assert.ok(game.stageTime - defeatedAt >= DROP_TTL);
 });
 
-test('late final-boss rewards retain their ten-second pickup window and pause freezes that window', () => {
+test('尾王晚死保留 10 秒拾取窗口且暫停凍結之', () => {
   const game = quietGame({ practiceStage: STAGES.length - 1 });
   game.player.invulnerable = 1000;
   advance(game, STAGE_SECONDS + 1);
@@ -529,7 +529,7 @@ test('late final-boss rewards retain their ten-second pickup window and pause fr
     ['weapon', 'repair', 'bomb']
   );
   const weapon = game.drops.find((drop) => drop.kind === 'weapon');
-  // Keep one reward away from the ship to isolate availability from magnet pickup.
+  // 留一個獎勵遠離戰機，隔離「可拾取性」與吸附拾取。
   Object.assign(weapon, { x: 30, y: 115, vx: 0, vy: 0, phase: 0 });
   advance(game, 1);
   game.pause();
@@ -551,7 +551,7 @@ test('late final-boss rewards retain their ten-second pickup window and pause fr
   assert.equal(game.bossDefeatedAt, null);
 });
 
-test('five completed stages require at least 600 simulated active seconds and five boss deaths', () => {
+test('五關通關至少 600 秒有效戰鬥且擊破五首領', () => {
   const game = quietGame();
   const stageDurations = [];
   for (let index = 0; index < STAGES.length; index++) {
@@ -593,7 +593,7 @@ test('five completed stages require at least 600 simulated active seconds and fi
   );
 });
 
-test('continues are limited to three and replay the current stage without erasing elapsed play time', () => {
+test('續戰上限 3 次且重開當前關不清除已用時間', () => {
   const game = quietGame({ difficulty: 'arcade' });
   game.enterStage(2);
   game.time = 300;
@@ -623,7 +623,7 @@ test('continues are limited to three and replay the current stage without erasin
   assert.equal(game.continueRun(), false);
 });
 
-test('invalid or stalled frame deltas cannot fast-forward a stage', () => {
+test('非法或停滯的幀間隔不得快轉關卡', () => {
   const game = quietGame();
   for (const dt of [0, -1, NaN, Infinity]) game.update(dt);
   assert.equal(game.time, 0);

@@ -16,7 +16,7 @@ const storage = {
     try {
       localStorage.setItem(`skyfire:${key}`, JSON.stringify(value));
     } catch {
-      /* Play remains available with storage blocked. */
+      /* 儲存被阻擋時遊戲仍可遊玩。 */
     }
   },
 };

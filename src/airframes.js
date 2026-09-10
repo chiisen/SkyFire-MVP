@@ -1,5 +1,5 @@
-// Original mesh-built aircraft, projected into Canvas 2D. No downloaded models or textures.
-// x: wingspan, y: nose-to-tail, z: height above the wing. Simulation coordinates stay unchanged.
+// 網格建模的戰機，投影至 Canvas 2D。無下載模型或貼圖。
+// x：翼展，y：機頭至機尾，z：機翼上方高度。模擬座標維持不變。
 const TAU = Math.PI * 2;
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const unit = (v) => {
@@ -30,7 +30,7 @@ function face(model, points, mat, edge = true) {
   model.faces.push({ points, normal, mat, edge });
 }
 
-// Beveled armor: a separate top, sloped rim and darker vertical side walls.
+// 倒角裝甲：獨立頂面、斜邊框與較暗的垂直側壁。
 function armor(model, contour, bottom, top, mat, bevel = 0.1, map = (p) => p) {
   let points = contour.map((p) => [...p]);
   const area = points.reduce((sum, p, i) => {
@@ -50,7 +50,7 @@ function armor(model, contour, bottom, top, mat, bevel = 0.1, map = (p) => p) {
   }
 }
 
-// Seven-sided longitudinal sections give the fuselage curved shoulders and real volume.
+// 七邊形縱向截面賦予機身弧形肩線與真實體積。
 function fuselage(model, x, sections, mat) {
   const rings = sections.map(([y, w, h, z]) =>
     [
@@ -73,7 +73,7 @@ function fuselage(model, x, sections, mat) {
 }
 
 function panel(model, points, mat) {
-  // Mirroring a top decal reverses its winding; keep both wings facing the camera.
+  // 鏡像頂部貼花會反轉繞序；保持雙翼朝向鏡頭。
   if (cross(sub(points[1], points[0]), sub(points[2], points[0]))[2] < 0) points = [...points].reverse();
   face(model, points, mat, false);
 }
@@ -136,7 +136,7 @@ function engine(model, x, y, width, mat) {
     ],
     mat
   );
-  // Inlet throat, intake lip and the separate titanium exhaust collar.
+  // 進氣道喉部、進氣唇與獨立鈦合金排氣環。
   armor(
     model,
     [
@@ -221,7 +221,7 @@ function canopy(model, long = false) {
     ],
     M.amber
   );
-  // Curved canopy's reflection and transverse frame, both attached to its surface.
+  // 曲面座艙罩的反射與橫向框架，皆附著於其表面。
   panel(
     model,
     [
@@ -257,7 +257,7 @@ function markings(model, s, x, y, z, id) {
     M.white
   );
   for (let i = 0; i < id + 1; i++) rect(model, X(-3 + i * 2.1), y + 10, 1.05, 4, z + 0.02, M.silver);
-  // Small service fasteners remain visible in the hangar without outlining every face.
+  // 小型維修扣件在機庫中可見，無需描繪每個面。
   for (const yy of [y - 5, y + 19])
     for (const xx of [-7, 6]) {
       const px = X(xx);
@@ -292,7 +292,7 @@ function makeAirframe(id) {
   const model = { faces: [], engines: [], id };
   const paint = [M.red, M.blue, M.gold][id];
   if (id === 0) {
-    // Scarlet interceptor: swept wings, long needle nose and split engine nacelles.
+    // 緋紅攔截機：後掠翼、長針形機頭與分離式引擎艙。
     mirrored(
       model,
       [
@@ -411,7 +411,7 @@ function makeAirframe(id) {
     );
     canopy(model);
   } else if (id === 1) {
-    // Cobalt striker: forward-reaching wings and a pair of long accelerator rails.
+    // 鈷藍突擊機：前掠翼與一對長加速軌。
     mirrored(
       model,
       [
@@ -508,7 +508,7 @@ function makeAirframe(id) {
     );
     canopy(model, true);
   } else {
-    // Armored gunship: broad shoulders, four gun barrels and oversized engines.
+    // 裝甲砲艇：寬肩、四門砲管與加大引擎。
     mirrored(
       model,
       [
@@ -678,7 +678,7 @@ function paintMesh(c, model, transform) {
   }
 }
 
-// Nine cached banking poses per hull: bounded memory, one image draw during combat.
+// 每具機體快取九種側傾姿態：記憶體有界，戰鬥中只需一次貼圖。
 const spriteCache = new Map();
 function sprite(model, bank) {
   if (typeof OffscreenCanvas === 'undefined') return null;
@@ -753,7 +753,7 @@ export function drawAirframe(
   c.save();
   c.translate(x, y);
   c.scale(scale * 0.66, scale * 0.66);
-  // Soft projected shadow separates the fuselage from terrain or the hangar platform.
+  // 柔和投影陰影分離機身與地形或機庫平台。
   c.save();
   c.translate(8, 12);
   c.scale(1, 0.78);

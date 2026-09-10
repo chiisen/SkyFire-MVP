@@ -1,4 +1,4 @@
-// All sound is synthesized locally after a user gesture; no audio files or requests.
+// 所有聲音皆於使用者手勢後本地合成；無音檔、無請求。
 export class Sound {
   constructor(enabled = true) {
     this.enabled = enabled;
@@ -24,7 +24,7 @@ export class Sound {
       if (this.ctx.state === 'suspended') await this.ctx.resume();
       this.musicAt = this.ctx.currentTime;
     } catch {
-      /* Audio is optional, including browsers that block audio contexts. */
+      /* 音訊為選配，含阻擋音訊環境的瀏覽器。 */
     }
   }
   setEnabled(enabled) {
