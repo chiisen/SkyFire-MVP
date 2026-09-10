@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#09131e" />
+    <meta name="description" content="SkyFire 天火遠征：三種戰機、五大空域、漂移彈幕、多階段首領與四色武器。支援手機觸控的十分鐘原創街機戰役。" />
+    <title>SkyFire · 天火遠征</title>
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <symbol id="i-wing" viewBox="0 0 24 24"><path d="m12 2 3 8 7 7-8-2-2 7-2-7-8 2 7-7Z" /></symbol>
+        <symbol id="i-bolt" viewBox="0 0 24 24"><path d="m14 2-10 12h7l-1 8 10-12h-7Z" /></symbol>
+        <symbol id="i-bomb" viewBox="0 0 24 24">
+          <circle cx="10" cy="14" r="7" />
+          <path d="m14 8 3-3m-1-3 1 3 4 1M7 11l2-1" />
+        </symbol>
+        <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" /></symbol>
+        <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 5-6 4H2v6h3l6 4ZM16 8c3 2 3 6 0 8m3-11c5 4 5 10 0 14" /></symbol>
+        <symbol id="i-target" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="7" />
+          <circle cx="12" cy="12" r="2" />
+          <path d="M12 1v4m0 14v4M1 12h4m14 0h4" />
+        </symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6" /></symbol>
+      </defs>
+    </svg>
+    <div class="app-shell">
+      <header class="masthead">
+        <a class="brand" href="./" aria-label="SkyFire 首頁"
+          ><svg><use href="#i-wing" /></svg><span>SKYFIRE<small>天火遠征 / FLIGHT COMMAND</small></span></a
+        >
+        <div class="header-meta"><span class="status-dot"></span> NO INSTALL <span class="divider">/</span> VOL. 001</div>
+        <div class="header-actions">
+          <button id="sound-button" class="icon-button" aria-label="開啟聲音" aria-pressed="false">
+            <svg><use href="#i-sound" /></svg><span id="sound-label">靜音</span></button
+          ><button id="help-button" class="icon-button" aria-label="操作與玩法說明">?</button>
+        </div>
+      </header>
+      <main class="command-layout">
+        <aside class="left-panel">
+          <p class="eyebrow"><span class="orange-dot"></span> THE LAST SQUADRON</p>
+          <h1>
+            SKY<span>FIRE<span class="title-dot">.</span></span>
+          </h1>
+          <p class="chinese-title">天火遠征</p>
+          <p class="intro">穿過彈幕，擊碎天穹。<br />最後一道防線，由你守住。</p>
+          <section class="route-section" aria-label="五關戰役航線">
+            <div class="section-heading"><span>作戰航線</span><small>5 SECTORS / 10 MIN+</small></div>
+            <ol id="mission-route"></ol>
+          </section>
+          <div class="best-record"><span>本機戰役最高分</span><strong id="best-score">000,000</strong><small>僅保存在此瀏覽器 · 演練不計入</small></div>
+        </aside>
+        <section class="arcade" aria-label="戰機遊戲">
+          <div class="cabinet-top">
+            <span><i></i> LIVE FLIGHT</span><span id="flight-state">HANGAR 01</span><span>480 : 800</span>
+          </div>
+          <div class="stage" id="stage">
+            <canvas
+              id="game-canvas"
+              width="480"
+              height="800"
+              tabindex="0"
+              aria-label="戰場。在任意位置按住拖動戰機，或用方向鍵及 WASD 移動；自動開火。空白鍵使用炸彈，E 開啟爆發，P 暫停。"
+            ></canvas>
+            <div id="hud" class="hud" hidden>
+              <div class="hud-top">
+                <div>
+                  <small>SCORE <span id="multiplier">×1</span></small
+                  ><strong id="score">000000</strong>
+                </div>
+                <div class="hud-time"><small id="hud-stage">01 / 05</small><strong id="elapsed">00:00</strong></div>
+                <button id="pause-button" class="icon-button" aria-label="暫停戰鬥">
+                  <svg><use href="#i-pause" /></svg>
+                </button>
+              </div>
+              <div class="vitals"><span id="hull" aria-label="機體耐久"></span><span id="shield" aria-label="護盾"></span></div>
+              <div id="boss-hud" class="boss-hud" hidden>
+                <div><span id="boss-name"></span><span id="boss-phase"></span></div>
+                <div class="boss-track"><i id="boss-fill"></i></div>
+              </div>
+            </div>
+            <div id="hangar" class="hangar">
+              <div class="hangar-heading">
+                <p class="eyebrow">MISSION 001 — THE SKY IS CALLING</p>
+                <h2>選擇你的戰機</h2>
+                <p>三種機體。一條通往天穹的航線。</p>
+              </div>
+              <div class="ship-details">
+                <span id="ship-code">F-01 / INTERCEPTOR</span><span>READY TO DEPLOY <i></i></span>
+              </div>
+              <div class="hangar-controls">
+                <div class="ship-picker" id="ship-picker" aria-label="選擇戰機"></div>
+                <div class="ship-summary">
+                  <p id="ship-description"></p>
+                  <div id="ship-stats"></div>
+                </div>
+                <div class="run-options">
+                  <label
+                    >難度<select id="difficulty">
+                      <option value="normal">標準 · 致命一擊自動炸彈</option>
+                      <option value="arcade">街機 · 更密彈幕，手動炸彈</option>
+                    </select></label
+                  ><label
+                    >航程<select id="run-mode">
+                      <option value="campaign">完整戰役 · 5 關 / 10 分鐘起</option>
+                      <option value="0">演練 · 01 晨曦海港</option>
+                      <option value="1">演練 · 02 翡翠峽谷</option>
+                      <option value="2">演練 · 03 冰川陣列</option>
+                      <option value="3">演練 · 04 熔核工廠</option>
+                      <option value="4">演練 · 05 天穹核心</option>
+                    </select></label
+                  >
+                </div>
+                <button id="start-button" class="primary-button">
+                  <span>開始遠征 <small>AUTO FIRE ON</small></span
+                  ><svg><use href="#i-arrow" /></svg>
+                </button>
+                <p class="start-hint">拖動移動 / WASD · 自動開火 · 手機可玩</p>
+              </div>
+            </div>
+            <div id="stage-announcement" class="stage-announcement" hidden>
+              <small id="announcement-kicker"></small><strong id="announcement-title"></strong><span id="announcement-detail"></span>
+            </div>
+            <div
+              id="overlay"
+              class="game-overlay"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="overlay-title"
+              aria-describedby="overlay-description"
+              hidden
+            >
+              <div class="overlay-card">
+                <p id="overlay-kicker" class="eyebrow"></p>
+                <h2 id="overlay-title"></h2>
+                <p id="overlay-description"></p>
+                <div id="overlay-content"></div>
+                <div id="overlay-actions"></div>
+              </div>
+            </div>
+            <div id="toast" class="toast" role="status" hidden></div>
+            <div class="stage-progress" aria-hidden="true"><i id="stage-progress-fill"></i></div>
+          </div>
+          <div class="combat-controls">
+            <button id="bomb-button" disabled>
+              <svg><use href="#i-bomb" /></svg
+              ><span
+                >震盪炸彈<small>SPACE · <b id="bomb-count">2</b> 枚</small></span
+              >
+            </button>
+            <button id="overdrive-button" disabled class="overdrive-button">
+              <i id="charge-fill"></i><svg><use href="#i-bolt" /></svg><span>雷霆爆發<small id="charge-label">E · 20%</small></span>
+            </button>
+            <button id="focus-button" disabled aria-pressed="false">
+              <svg><use href="#i-target" /></svg><span>精密移動<small>SHIFT · 低速</small></span>
+            </button>
+          </div>
+          <div class="cabinet-bottom"><span id="weapon-mini">P / 風暴脈衝 LV.1</span><span id="bottom-tip">AUTO FIRE / DRAG TO FLY</span></div>
+        </section>
+        <aside class="right-panel">
+          <section class="loadout-section">
+            <div class="section-heading"><span>當前裝載</span><small>LOADOUT</small></div>
+            <div class="weapon-emblem" id="weapon-emblem">P</div>
+            <p class="eyebrow" id="weapon-tier">BLUE / 藍色</p>
+            <h2 id="weapon-name">風暴脈衝</h2>
+            <p id="weapon-description">扇形散射覆蓋寬闊空域，適合清理分散敵機。</p>
+            <div class="weapon-level" id="weapon-level"></div>
+          </section>
+          <section class="supply-section">
+            <div class="section-heading"><span>戰場補給</span><small>10s TO CLAIM</small></div>
+            <div class="loot-key">
+              <span style="--loot: #69b9ff">P<small>散射</small></span
+              ><span style="--loot: #7af0b8">L<small>穿透</small></span
+              ><span style="--loot: #c795ff">A<small>追蹤</small></span
+              ><span style="--loot: #ffd36b">N<small>爆裂</small></span>
+            </div>
+            <p>擊落敵機，追逐漂浮補給。<br />同款升級，異款切換，等級保留。</p>
+          </section>
+          <section class="tactics-section">
+            <div class="section-heading"><span>飛行手冊</span><small>FIELD NOTES</small></div>
+            <dl>
+              <div>
+                <dt>01</dt>
+                <dd><strong>看清預警線</strong><span>虛線預警後，雷射才有傷害。</span></dd>
+              </div>
+              <div>
+                <dt>02</dt>
+                <dd><strong>擦彈獲得充能</strong><span>貼近彈幕，蓄滿 8 秒火力爆發。</span></dd>
+              </div>
+              <div>
+                <dt>03</dt>
+                <dd><strong>留一枚炸彈</strong><span>清除彈幕，換取短暫無敵。</span></dd>
+              </div>
+            </dl>
+          </section>
+          <div class="project-note">
+            <span>ORIGINAL ARCADE EXPERIMENT</span>
+            <p>原創程序畫面與合成聲音<br />SkyFire-MVP</p>
+            <button id="reduced-button" class="text-button" aria-pressed="false">減少裝飾動態：關閉</button>
+          </div>
+        </aside>
+      </main>
+      <footer class="page-footer"><span>A SMALL HITBOX. A VERY BIG SKY.</span><span>FREE TO PLAY / NO LOGIN / NO ADS</span></footer>
+    </div>
+    <dialog id="help-dialog">
+      <button class="dialog-close icon-button" aria-label="關閉玩法說明">×</button>
+      <p class="eyebrow">FLIGHT MANUAL</p>
+      <h2>十分鐘，穿越五大空域。</h2>
+      <p>每關至少 120 秒，擊破該關首領才能前進；關間選擇強化不計入戰鬥時間。火力不足時首領戰會延長。演練只挑戰一關，不計入戰役紀錄。</p>
+      <dl class="manual-grid">
+        <div>
+          <dt>手機 / 滑鼠</dt>
+          <dd>在戰場任意位置按住拖動。戰機自動開火，移動採用相對位移，不會瞬移到手指處。底部三個按鈕可隨時使用。</dd>
+        </div>
+        <div>
+          <dt>鍵盤</dt>
+          <dd>WASD / 方向鍵移動；Shift 低速；空白鍵炸彈；E 爆發；P / Esc 暫停。</dd>
+        </div>
+        <div>
+          <dt>護盾與生存</dt>
+          <dd>中央的小光點是受擊核心。受傷後約 2 秒無敵；持續避彈 13 秒開始恢復護盾。關間修復 2 點機體、補滿護盾並補 1 枚炸彈。</dd>
+        </div>
+        <div>
+          <dt>武器補給</dt>
+          <dd>藍色散射、綠色穿透、紫色追蹤、金色爆裂。補給在場內反彈 10 秒；同款拾取升級到最高 Lv.5，異款切換時保留等級。</dd>
+        </div>
+        <div>
+          <dt>打出高分</dt>
+          <dd>持續擊殺疊加最高 ×5 連擊分；擦彈增加分數與爆發充能。雷霆爆發持續 8 秒，啟動時清彈，期間仍要躲避新彈幕。</dd>
+        </div>
+        <div>
+          <dt>暫停與續戰</dt>
+          <dd>切到後台會自動暫停。最多可續戰 3 次，重開當前關並扣除 35% 分數，已有升級保留。戰役最高分僅存本機。</dd>
+        </div>
+      </dl>
+      <button class="primary-button dialog-close">
+        明白，準備出擊<svg><use href="#i-arrow" /></svg>
+      </button>
+    </dialog>
+    <noscript>此遊戲需要 JavaScript。請開啟後重新載入。</noscript>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -24,7 +24,8 @@
 
 - 簡潔至上（KISS）、微創異動：只改與任務直接相關的程式碼，不重構無關部分。
 - 實作前先陳述假設；模糊處列方案與使用者確認，不擅自通靈。
-- 修 Bug 附 Regression Test；有 Lint 配置時異動後執行。
+- 修 Bug 附 Regression Test；異動後執行 `npx prettier --check .`（Prettier 設定見 `.prettierrc`）。
+- 程式碼註解、文件說明一律使用**繁體中文**（禁簡體字）。
 
 ## 5. 協作與輸出
 
