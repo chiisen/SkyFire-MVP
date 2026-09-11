@@ -1,6 +1,7 @@
 # SkyFire-MVP 專案規範（Gemini 專用）
 
-> 與 `AGENTS.md`、`CLAUDE.md` 保持同步；三份內容一致，僅檔名對應不同 Agent。
+> 與 `AGENTS.md`、`CLAUDE.md` 保持同步；§1–§5 內容一致，僅檔名對應不同 Agent。
+> §6 起為 Gemini 專用延伸，不需同步至另兩份。
 > 本文件為專案級規則，優先權高於全域指南。
 
 ## 1. 專案概述
@@ -33,3 +34,10 @@
 - Git Commit 格式：`<type>(<scope>): <subject>`，主旨與內容皆繁體中文。
 - 提交前提問「是否開始 Git 提交流程？」經核准後執行。
 - 根目錄 `CHANGELOG.md`（Keep a Changelog 格式，繁體中文）隨異動更新。
+
+## 6. 任務查詢（Gemini 專用）
+
+- 當使用者查詢任務（例如「有哪些任務可執行」），透過 `gh` 查 issue 後回報可執行任務。
+- 查詢指令：`gh issue list --state open --limit 20`；需明細時用 `gh issue view <編號>`。
+- 回報內容：編號＋標題＋狀態，並依標籤/更新時間建議執行順序；無 open issue 時明確告知。
+- 只讀查詢不改動 issue；認領或開新任務前先與使用者確認。

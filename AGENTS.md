@@ -1,6 +1,7 @@
 # SkyFire-MVP 專案規範（AI Agent 指南）
 
 > 本文件為專案級規範，優先權高於全域指南。
+> 與 `CLAUDE.md`、`GEMINI.md` §1–§5 保持同步；`GEMINI.md` §6 起為 Gemini 專用延伸，不需同步至本文件。
 
 ## 1. 專案概述
 

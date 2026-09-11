@@ -1,6 +1,7 @@
 # SkyFire-MVP 專案規範（Claude 專用）
 
-> 與 `AGENTS.md`、`GEMINI.md` 保持同步；三份內容一致，僅檔名對應不同 Agent。
+> 與 `AGENTS.md`、`GEMINI.md` §1–§5 保持同步，僅檔名對應不同 Agent。
+> `GEMINI.md` §6 起為 Gemini 專用延伸，不需同步至本文件。
 
 ## 1. 專案概述
 
