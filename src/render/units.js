@@ -1,8 +1,74 @@
 import { TAU, clamp, poly, line, circle, plate } from './shared.js';
 
+// 尾焰 sprite 快取：漸層每敵每幀新建是雜兵群最大開銷，烘焙一次、每朵一次貼圖。
+// 實務只有一種規格（寬 2、高 -14、同色），閃爍以整張縱向縮放呈現，誤差不足 1px。
+const FLAME_SS = 2;
+const flameCache = new Map();
+
+function makeFlameCanvas(w, h) {
+  try {
+    if (typeof document !== 'undefined' && document.createElement) {
+      const el = document.createElement('canvas');
+      el.width = w;
+      el.height = h;
+      const ctx = el.getContext('2d');
+      if (ctx) return [el, ctx];
+    } else if (typeof OffscreenCanvas !== 'undefined') {
+      const el = new OffscreenCanvas(w, h);
+      const ctx = el.getContext('2d');
+      if (ctx) return [el, ctx];
+    }
+  } catch {
+    /* 無畫布環境時退回向量繪製。 */
+  }
+  return null;
+}
+
+// 取指定顏色的尾焰 sprite（參數 color，回傳 {el, half, base} 或空；base 為基部在圖中的 y）。
+function flameSprite(color) {
+  if (flameCache.has(color)) return flameCache.get(color);
+  const w = 2,
+    h = 14,
+    pad = 2,
+    half = w + pad,
+    base = pad + h;
+  const layer = makeFlameCanvas(Math.ceil(half * 2 * FLAME_SS), Math.ceil((h + pad * 2) * FLAME_SS));
+  if (!layer) return null;
+  const [el, ctx] = layer;
+  ctx.scale(FLAME_SS, FLAME_SS);
+  ctx.translate(half, base);
+  const g = ctx.createLinearGradient(0, 0, 0, -h);
+  g.addColorStop(0, '#ecfdff');
+  g.addColorStop(0.22, color);
+  g.addColorStop(1, 'transparent');
+  poly(
+    ctx,
+    [
+      [-w, 0],
+      [w, 0],
+      [w * 0.48, -h * 0.52],
+      [0, -h],
+      [-w * 0.48, -h * 0.52],
+    ],
+    g
+  );
+  const sprite = { el, half, base };
+  if (flameCache.size >= 8) flameCache.clear();
+  flameCache.set(color, sprite);
+  return sprite;
+}
+
 // 繪製引擎尾焰漸層火焰，表現推進器閃爍的推進效果。
 export function flame(c, x, y, width, height, color, time) {
   const flicker = 0.88 + Math.sin(time * 41 + x) * 0.08 + Math.sin(time * 63) * 0.04;
+  const sprite = flameSprite(color);
+  // 呼叫點規格固定（寬 2、高 -14），直接以閃爍縮放貼圖；規格外退回向量。
+  if (sprite && width === 2 && height === -14 && typeof c.drawImage === 'function') {
+    // 寬度固定，只縱向隨閃爍縮放（向量版亦只有焰尖高度會閃）。
+    const f = flicker;
+    c.drawImage(sprite.el, x - sprite.half, y - sprite.base * f, sprite.half * 2, (sprite.base + 2) * f);
+    return;
+  }
   const g = c.createLinearGradient(x, y, x, y + height);
   g.addColorStop(0, '#ecfdff');
   g.addColorStop(0.22, color);
@@ -526,6 +592,14 @@ export function boss(c, e, t) {
     c.fillRect(-60, 117, 120 * progress, 2);
   }
   c.restore();
+}
+
+// 測試鉤子：查詢快取數量與清空快取（不影響遊戲邏輯）。
+export function __flameCacheStats() {
+  return { flames: flameCache.size };
+}
+export function __clearFlameCache() {
+  flameCache.clear();
 }
 
 // 繪製雷射預警虛線與高亮主光束，呈現蓄力到發射的過程。

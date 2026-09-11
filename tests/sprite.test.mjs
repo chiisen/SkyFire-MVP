@@ -3,6 +3,7 @@ import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 
 const mod = await import('../src/render/combat.js');
+const units = await import('../src/render/units.js');
 
 // 記錄呼叫的主畫布 stub。
 function mainStub(counters) {
@@ -124,5 +125,44 @@ describe('敵彈 sprite', () => {
     mod.projectile(mainStub(counters), { ...BULLET }, true);
     assert.equal(counters.draws, 0);
     assert.deepEqual(mod.__spriteCacheStats(), { sprites: 0 });
+  });
+});
+
+describe('尾焰 sprite', () => {
+  const FLAME = { x: 0, y: 0, width: 2, height: -14, color: '#fd8d5b' };
+
+  beforeEach(() => {
+    units.__clearFlameCache();
+  });
+  afterEach(() => {
+    units.__clearFlameCache();
+    delete globalThis.document;
+  });
+
+  it('無 DOM 時退回向量繪製，不報錯且不建快取', () => {
+    delete globalThis.document;
+    const counters = { draws: 0, arcs: 0, layers: 0 };
+    units.flame(mainStub(counters), FLAME.x, FLAME.y, FLAME.width, FLAME.height, FLAME.color, 1.0);
+    assert.equal(counters.draws, 0);
+    assert.deepEqual(units.__flameCacheStats(), { flames: 0 });
+  });
+
+  it('多次呼叫只烘焙一次，每次貼圖', () => {
+    const counters = { draws: 0, arcs: 0, layers: 0 };
+    installFakeDocument(counters);
+    const c = mainStub(counters);
+    units.flame(c, 0, 0, 2, -14, '#fd8d5b', 1.0);
+    units.flame(c, 5, 5, 2, -14, '#fd8d5b', 2.0);
+    units.flame(c, -3, 7, 2, -14, '#fd8d5b', 3.0);
+    assert.equal(counters.layers, 1, '同色只烘焙一次');
+    assert.equal(counters.draws, 3, '每次貼圖一次');
+    assert.deepEqual(units.__flameCacheStats(), { flames: 1 });
+  });
+
+  it('非常規格退回向量繪製', () => {
+    const counters = { draws: 0, arcs: 0, layers: 0 };
+    installFakeDocument(counters);
+    units.flame(mainStub(counters), 0, 0, 3, -20, '#fd8d5b', 1.0);
+    assert.equal(counters.draws, 0, '非常規格不貼圖');
   });
 });
