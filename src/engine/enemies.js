@@ -1,5 +1,5 @@
 import { WIDTH, HEIGHT, STAGES } from '../data.js';
-import { dist2, segmentDistance, TAU } from './utils.js';
+import { dist2, compact, segmentDistance, TAU } from './utils.js';
 
 // 敵機體質表：提到模組常量，避免每次生成敵機重建字面量。
 const ENEMY_SPECS = {
@@ -333,6 +333,6 @@ export function updateBeams(dt) {
       if (d < beam.width * 0.5 + 4) this.hitPlayer();
     }
   }
-  this.beams = this.beams.filter((b) => b.age < b.warn + b.duration);
+  compact(this.beams, (b) => b.age < b.warn + b.duration);
 }
 // 在場內生成武器或補給掉落物（參數 x、y、kind、weapon，回傳無）。

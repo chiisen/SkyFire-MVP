@@ -1,5 +1,5 @@
 import { WIDTH, HEIGHT, SHIPS, STAGES, STAGE_SECONDS, BOSS_AT, DROP_TTL } from '../data.js';
-import { clamp, seededRandom } from './utils.js';
+import { clamp, compact, seededRandom } from './utils.js';
 
 // 建構遊戲實例並以種子初始化亂數狀態（參數 seed，回傳無）。
 export function construct(seed = Date.now()) {
@@ -190,8 +190,8 @@ export function step(dt, input) {
     e.age += dt;
     if (e.type === 'text') e.y -= dt * 20;
   });
-  this.effects = this.effects.filter((e) => e.age < e.ttl);
-  this.enemies = this.enemies.filter((e) => !e.dead && e.y < HEIGHT + 90 && e.x > -160 && e.x < WIDTH + 160);
+  compact(this.effects, (e) => e.age < e.ttl);
+  compact(this.enemies, (e) => !e.dead && e.y < HEIGHT + 90 && e.x > -160 && e.x < WIDTH + 160);
   // 晚擊殺首領仍給完整有效時間拾取掉落。
   if (
     this.mode === 'playing' &&

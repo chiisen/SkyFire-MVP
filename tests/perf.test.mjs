@@ -94,7 +94,7 @@ describe('玩家子彈粗排', () => {
       type: 'pulse',
       color: '#fff',
       damage: 50,
-      hit: new Set(),
+      hit: [],
     });
     game.updateShots(1 / 60);
     assert.ok(near.dead || near.hp < 10, '近處敵機應受傷');
@@ -248,5 +248,106 @@ describe('觸控矩形快取', () => {
     } finally {
       globalThis.devicePixelRatio = keep;
     }
+  });
+});
+
+describe('零配置容器', () => {
+  it('compact 原地過濾且同一參照', () => {
+    const list = [1, 2, 3, 4, 5];
+    const out = utils.compact(list, (n) => n % 2 === 1);
+    assert.equal(out, list, '應回傳同一陣列');
+    assert.deepEqual(list, [1, 3, 5]);
+  });
+
+  it('pushCapped 滿額輪寫，上限不變', () => {
+    const list = [];
+    for (let i = 0; i < 10; i++) utils.pushCapped(list, i, 4);
+    assert.equal(list.length, 4);
+    assert.ok(list.includes(9), '最新元素應保留');
+  });
+
+  it('穿透彈命中集為陣列且穿透 4 次後停止', () => {
+    const game = freshGame();
+    for (let i = 0; i < 5; i++) {
+      game.enemies.push({
+        id: 950 + i,
+        type: 'scout',
+        x: 240,
+        y: 300 + i * 30,
+        r: 16,
+        w: 43,
+        h: 34,
+        hp: 500,
+        maxHp: 500,
+        dead: false,
+        age: 0,
+        flash: 0,
+        stage: 0,
+      });
+    }
+    game.shots.push({
+      x: 240,
+      y: 480,
+      prevX: 240,
+      prevY: 482,
+      vx: 0,
+      vy: -1000,
+      r: 5,
+      age: 0,
+      type: 'laser',
+      color: '#fff',
+      damage: 10,
+      pierce: 4,
+      hit: [],
+    });
+    const shot = game.shots[0];
+    for (let i = 0; i < 8 && !shot.dead; i++) game.updateShots(1 / 60);
+    assert.ok(Array.isArray(shot.hit), '命中集應為陣列');
+    assert.ok(shot.hit.length <= 4, '穿透不超過上限');
+    assert.equal(shot.dead, true, '穿透額滿應停止');
+  });
+
+  it('特效與掉落定額，上限不膨脹', () => {
+    const game = freshGame();
+    for (let i = 0; i < 250; i++) game.fx('ring', i, i, '#fff', 10);
+    assert.equal(game.effects.length, 180);
+    for (let i = 0; i < 40; i++) game.spawnDrop(240, 400, 'shield');
+    assert.equal(game.drops.length, 25);
+  });
+
+  it('更新函式重用陣列參照', () => {
+    const game = freshGame();
+    game.bullets.push({
+      x: 50,
+      y: 100,
+      prevX: 50,
+      prevY: 98,
+      angle: 0,
+      speed: 50,
+      vx: 50,
+      vy: 0,
+      r: 4.5,
+      age: 0,
+      type: 'aim',
+      color: '#fff',
+      turn: 0,
+      life: 8,
+    });
+    const bullets = game.bullets,
+      shots = game.shots,
+      drops = game.drops,
+      effects = game.effects,
+      enemies = game.enemies,
+      beams = game.beams;
+    game.updateBullets(1 / 60);
+    game.updateShots(1 / 60);
+    game.updateDrops(1 / 60);
+    game.updateBeams(1 / 60);
+    assert.equal(game.bullets, bullets);
+    assert.equal(game.shots, shots);
+    assert.equal(game.drops, drops);
+    assert.equal(game.beams, beams);
+    assert.equal(game.effects, effects);
+    assert.equal(game.enemies, enemies);
   });
 });

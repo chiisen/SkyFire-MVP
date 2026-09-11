@@ -1,5 +1,5 @@
 import { WIDTH, HEIGHT, SHIPS, WEAPONS } from '../data.js';
-import { clamp, dist2, segmentDistance, TAU } from './utils.js';
+import { clamp, compact, dist2, segmentDistance, TAU } from './utils.js';
 
 // 累積超載能量條並吃反應爐加成（參數 n，回傳無）。
 export function addCharge(n) {
@@ -49,7 +49,8 @@ export function addShot(x, y, angle, type, damage, speed = 660, r = 4, extra = {
     type,
     color: WEAPONS[type]?.color || '#e2edff',
     damage: damage * SHIPS[p.shipId].damage * (1 + this.upgrades.damage * 0.15) * (p.overdriveTime ? 1.65 : 1),
-    hit: new Set(),
+    // 命中集只裝穿透彈的少數 id（穿透上限 4），小陣列比 Set 省配置。
+    hit: [],
     ...extra,
   });
 }
@@ -115,14 +116,14 @@ export function updateShots(dt) {
     // 粗排：子彈本幀位移有限，離現點超過（半徑和＋步長）就不可能碰到線段，直接跳過精確計算。
     const step = Math.hypot(shot.vx, shot.vy) * dt;
     for (const enemy of this.enemies) {
-      if (enemy.dead || shot.dead || shot.hit.has(enemy.id)) continue;
+      if (enemy.dead || shot.dead || shot.hit.includes(enemy.id)) continue;
       const rr = enemy.r + shot.r,
         coarse = rr + step,
         dx = enemy.x - shot.x,
         dy = enemy.y - shot.y;
       if (dx * dx + dy * dy > coarse * coarse) continue;
       if (segmentDistance(enemy.x, enemy.y, shot.prevX, shot.prevY, shot.x, shot.y) < rr) {
-        shot.hit.add(enemy.id);
+        shot.hit.push(enemy.id);
         this.damageEnemy(enemy, shot.damage);
         if (shot.blast) {
           this.fx('ring', shot.x, shot.y, '#ffd478', shot.blast);
@@ -130,13 +131,11 @@ export function updateShots(dt) {
             if (other !== enemy && !other.dead && dist2(shot, other) < (shot.blast + other.r) ** 2)
               this.damageEnemy(other, shot.damage * 0.5);
         }
-        if (!shot.pierce || shot.hit.size >= shot.pierce) shot.dead = true;
+        if (!shot.pierce || shot.hit.length >= shot.pierce) shot.dead = true;
       }
     }
   }
-  this.shots = this.shots.filter(
-    (s) => !s.dead && s.age < 4 && s.y > -50 && s.y < HEIGHT + 50 && s.x > -60 && s.x < WIDTH + 60
-  );
+  compact(this.shots, (s) => !s.dead && s.age < 4 && s.y > -50 && s.y < HEIGHT + 50 && s.x > -60 && s.x < WIDTH + 60);
 }
 // 結算玩家受擊扣盾扣血或觸發自動炸彈與終局（無參數，回傳無）。
 export function hitPlayer() {
@@ -196,7 +195,8 @@ export function updateBullets(dt) {
       pending.push(b);
     }
   }
-  this.bullets = this.bullets.filter(
+  compact(
+    this.bullets,
     (b) => !b.dead && b.age < b.life && b.x > -100 && b.x < WIDTH + 100 && b.y > -120 && b.y < HEIGHT + 80
   );
   for (const b of pending) this.fan(b.x, b.y, b.age, 8, TAU / 8, 140, 'drift', { turn: 0.2 });

@@ -1,5 +1,5 @@
 import { WIDTH, HEIGHT, WEAPONS, STAGES, UPGRADES, DROP_TTL } from '../data.js';
-import { clamp, dist2, chooseWeapon, TAU } from './utils.js';
+import { clamp, compact, dist2, chooseWeapon, pushCapped, TAU } from './utils.js';
 
 export function continueRun() {
   if (this.mode !== 'gameover' || this.continues >= 3) return false;
@@ -47,33 +47,39 @@ export function makeChoices() {
 // 新增爆炸、光環或浮字等視覺特效（參數 type、x、y、color、size、text，回傳無）。
 
 export function fx(type, x, y, color = '#ffe0a0', size = 20, text = '') {
-  if (this.effects.length >= 180) this.effects.shift();
-  this.effects.push({
-    type,
-    x,
-    y,
-    age: 0,
-    ttl: type === 'text' ? 1.25 : type === 'explosion' ? 0.7 : 0.4,
-    color,
-    size,
-    text,
-  });
+  pushCapped(
+    this.effects,
+    {
+      type,
+      x,
+      y,
+      age: 0,
+      ttl: type === 'text' ? 1.25 : type === 'explosion' ? 0.7 : 0.4,
+      color,
+      size,
+      text,
+    },
+    180
+  );
 }
 // 累積超載能量條並吃反應爐加成（參數 n，回傳無）。
 
 export function spawnDrop(x, y, kind = 'weapon', weapon = null) {
-  if (this.drops.length > 24) this.drops.shift();
-  this.drops.push({
-    x: clamp(x, 26, WIDTH - 26),
-    y: clamp(y, 105, HEIGHT - 65),
-    vx: (this.rng() < 0.5 ? -1 : 1) * (32 + this.rng() * 28),
-    vy: 37 + this.rng() * 30,
-    age: 0,
-    ttl: DROP_TTL,
-    kind,
-    weapon: weapon || chooseWeapon(this.rng),
-    phase: this.rng() * TAU,
-  });
+  pushCapped(
+    this.drops,
+    {
+      x: clamp(x, 26, WIDTH - 26),
+      y: clamp(y, 105, HEIGHT - 65),
+      vx: (this.rng() < 0.5 ? -1 : 1) * (32 + this.rng() * 28),
+      vy: 37 + this.rng() * 30,
+      age: 0,
+      ttl: DROP_TTL,
+      kind,
+      weapon: weapon || chooseWeapon(this.rng),
+      phase: this.rng() * TAU,
+    },
+    25
+  );
 }
 // 更新掉落物漂移、磁吸、反彈與拾取（參數 dt，回傳無）。
 
@@ -106,7 +112,7 @@ export function updateDrops(dt) {
     }
     if (dist2(drop, p) < 29 ** 2) this.collectDrop(drop);
   }
-  this.drops = this.drops.filter((d) => !d.dead);
+  compact(this.drops, (d) => !d.dead);
 }
 // 拾取掉落並套用武器升級或補給效果（參數 drop，回傳無）。
 

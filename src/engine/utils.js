@@ -36,6 +36,22 @@ export function seededRandom(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+// 原地過濾陣列（參數陣列與保留條件，回傳同一陣列）：取代每幀 filter 的新陣列配置。
+export function compact(list, keep) {
+  let w = 0;
+  for (let r = 0; r < list.length; r++) {
+    if (keep(list[r])) list[w++] = list[r];
+  }
+  list.length = w;
+  return list;
+}
+let cappedCursor = 0;
+// 定額推入（參數陣列、元素、上限，回傳陣列）：滿額時輪寫最舊槽位，免 shift 的 O(n) 搬移。
+export function pushCapped(list, item, cap) {
+  if (list.length < cap) list.push(item);
+  else list[(cappedCursor = (cappedCursor + 1) % cap)] = item;
+  return list;
+}
 // 依權重隨機挑選武器掉落種類（參數 random，回傳武器代號）。
 export function chooseWeapon(random) {
   let value = random();
