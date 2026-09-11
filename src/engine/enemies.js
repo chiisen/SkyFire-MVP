@@ -1,17 +1,19 @@
 import { WIDTH, HEIGHT, STAGES } from '../data.js';
 import { dist2, segmentDistance, TAU } from './utils.js';
 
+// 敵機體質表：提到模組常量，避免每次生成敵機重建字面量。
+const ENEMY_SPECS = {
+  scout: [28, 16, 43, 85],
+  interceptor: [38, 18, 48, 150],
+  gunship: [125, 29, 73, 43],
+  laser: [165, 26, 70, 37],
+  carrier: [240, 31, 86, 35],
+  mine: [42, 15, 38, 65],
+};
+
 export function spawnEnemy(type, x, y = -35, extra = {}) {
   if (this.enemies.length >= 65) return null;
-  const specs = {
-    scout: [28, 16, 43, 85],
-    interceptor: [38, 18, 48, 150],
-    gunship: [125, 29, 73, 43],
-    laser: [165, 26, 70, 37],
-    carrier: [240, 31, 86, 35],
-    mine: [42, 15, 38, 65],
-  };
-  const [hp, r, w, speed] = specs[type] || specs.scout;
+  const [hp, r, w, speed] = ENEMY_SPECS[type] || ENEMY_SPECS.scout;
   const e = {
     id: ++this.id,
     type,

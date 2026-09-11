@@ -30,6 +30,8 @@ export function wireInput(S) {
     e.preventDefault();
     focusCanvas(S);
     S.pointer = { id: e.pointerId, x: e.clientX, y: e.clientY, shipX: S.game.player.x, shipY: S.game.player.y };
+    // 拖曳期間版面不變，一次快取矩形，避免每次移動都觸發版面量測。
+    S.canvasRect = S.canvas.getBoundingClientRect();
     S.input.pointer = true;
     S.input.targetX = S.game.player.x;
     S.input.targetY = S.game.player.y;
@@ -38,7 +40,7 @@ export function wireInput(S) {
   S.canvas.addEventListener('pointermove', (e) => {
     if (!S.pointer || S.pointer.id !== e.pointerId || S.game.mode !== 'playing') return;
     e.preventDefault();
-    const rect = S.canvas.getBoundingClientRect();
+    const rect = S.canvasRect || S.canvas.getBoundingClientRect();
     S.input.targetX = clamp(S.pointer.shipX + ((e.clientX - S.pointer.x) / rect.width) * WIDTH * 1.15, 18, WIDTH - 18);
     S.input.targetY = clamp(
       S.pointer.shipY + ((e.clientY - S.pointer.y) / rect.height) * HEIGHT * 1.15,

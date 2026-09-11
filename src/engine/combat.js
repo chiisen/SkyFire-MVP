@@ -112,9 +112,16 @@ export function updateShots(dt) {
     }
     shot.x += shot.vx * dt;
     shot.y += shot.vy * dt;
+    // 粗排：子彈本幀位移有限，離現點超過（半徑和＋步長）就不可能碰到線段，直接跳過精確計算。
+    const step = Math.hypot(shot.vx, shot.vy) * dt;
     for (const enemy of this.enemies) {
       if (enemy.dead || shot.dead || shot.hit.has(enemy.id)) continue;
-      if (segmentDistance(enemy.x, enemy.y, shot.prevX, shot.prevY, shot.x, shot.y) < enemy.r + shot.r) {
+      const rr = enemy.r + shot.r,
+        coarse = rr + step,
+        dx = enemy.x - shot.x,
+        dy = enemy.y - shot.y;
+      if (dx * dx + dy * dy > coarse * coarse) continue;
+      if (segmentDistance(enemy.x, enemy.y, shot.prevX, shot.prevY, shot.x, shot.y) < rr) {
         shot.hit.add(enemy.id);
         this.damageEnemy(enemy, shot.damage);
         if (shot.blast) {
@@ -166,16 +173,23 @@ export function updateBullets(dt) {
     b.vy = Math.sin(b.angle) * b.speed;
     b.x += b.vx * dt;
     b.y += b.vy * dt;
-    const d = segmentDistance(this.player.x, this.player.y, b.prevX, b.prevY, b.x, b.y);
-    if (d < 5 + b.r) {
-      this.hitPlayer();
-      b.dead = true;
-    } else if (d < 23 + b.r && !b.grazed && this.player.invulnerable <= 0) {
-      b.grazed = true;
-      this.grazes++;
-      this.score += 25;
-      this.addCharge(1.4);
-      if (this.grazes % 4 === 0) this.fx('text', this.player.x, this.player.y - 25, '#a6ffdf', 12, 'GRAZE +25');
+    // 粗排：多數敵彈遠離玩家，先用距離平方排除，再對近距離者算線段精確值（受擊 5、擦彈 23）。
+    // 分裂排程不受影響，仍每次檢查。
+    const pdx = this.player.x - b.x,
+      pdy = this.player.y - b.y,
+      grazeR = 23 + b.r + Math.hypot(b.vx, b.vy) * dt;
+    if (pdx * pdx + pdy * pdy <= grazeR * grazeR) {
+      const d = segmentDistance(this.player.x, this.player.y, b.prevX, b.prevY, b.x, b.y);
+      if (d < 5 + b.r) {
+        this.hitPlayer();
+        b.dead = true;
+      } else if (d < 23 + b.r && !b.grazed && this.player.invulnerable <= 0) {
+        b.grazed = true;
+        this.grazes++;
+        this.score += 25;
+        this.addCharge(1.4);
+        if (this.grazes % 4 === 0) this.fx('text', this.player.x, this.player.y - 25, '#a6ffdf', 12, 'GRAZE +25');
+      }
     }
     if (b.split && b.age >= b.life) {
       b.dead = true;

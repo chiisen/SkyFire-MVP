@@ -28,7 +28,7 @@ export function updateHud(S, force = false) {
   if (boss) {
     $('boss-name').textContent = STAGES[S.game.stageIndex].bossName;
     $('boss-phase').textContent = `PHASE ${boss.phase}/3`;
-    $('boss-fill').style.width = `${Math.max(0, boss.hp / boss.maxHp) * 100}%`;
+    $('boss-fill').style.transform = `scaleX(${Math.max(0, boss.hp / boss.maxHp)})`;
   }
   $('bomb-count').textContent = p.bombs;
   $('bomb-button').disabled = !playing || p.bombs <= 0;
@@ -42,10 +42,10 @@ export function updateHud(S, force = false) {
   );
   $('charge-label').textContent =
     p.overdriveTime > 0 ? `爆發中 · ${p.overdriveTime.toFixed(1)}s` : `E · ${Math.floor(p.overdrive)}%`;
-  $('charge-fill').style.width = `${p.overdriveTime > 0 ? (p.overdriveTime / 8) * 100 : p.overdrive}%`;
+  $('charge-fill').style.transform = `scaleX(${p.overdriveTime > 0 ? p.overdriveTime / 8 : p.overdrive / 100})`;
   $('focus-button').disabled = !playing;
   $('pause-button').disabled = !playing;
-  $('stage-progress-fill').style.width = `${Math.min(1, S.game.stageTime / STAGE_SECONDS) * 100}%`;
+  $('stage-progress-fill').style.transform = `scaleX(${Math.min(1, S.game.stageTime / STAGE_SECONDS)})`;
   const weapon = WEAPONS[p.weapon],
     key = `${p.weapon}:${p.weaponLevel}`;
   if (S.lastWeapon !== key || force) {

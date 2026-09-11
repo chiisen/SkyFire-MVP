@@ -46,6 +46,7 @@ export function createState() {
     ctx,
     keys: new Set(),
     input: { dx: 0, dy: 0, pointer: false, targetX: 240, targetY: 665, slow: false },
+    canvasRect: null,
     reducedQuery,
     reducedMotion: storage.get('reducedMotion', reducedQuery.matches),
     selectedShip: 0,

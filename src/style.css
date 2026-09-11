@@ -480,8 +480,10 @@ canvas:focus:not(:focus-visible) {
 .boss-track i {
   display: block;
   height: 100%;
+  width: 100%;
   background: linear-gradient(90deg, #e46577, #ffb19b);
-  transition: width 0.1s;
+  transform-origin: left center;
+  transition: transform 0.1s;
 }
 .stage-progress {
   position: absolute;
@@ -495,7 +497,9 @@ canvas:focus:not(:focus-visible) {
   display: block;
   height: 100%;
   background: var(--accent);
-  width: 0;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
   box-shadow: 0 0 10px var(--accent);
 }
 .hangar {
@@ -740,9 +744,11 @@ canvas:focus:not(:focus-visible) {
   position: absolute;
   z-index: -1;
   inset: 0 auto 0 0;
-  width: 20%;
+  width: 100%;
   background: #b78b3d25;
-  transition: width 0.2s;
+  transform: scaleX(0.2);
+  transform-origin: left center;
+  transition: transform 0.2s;
 }
 .overdrive-button.ready {
   border-bottom: 2px solid var(--accent);

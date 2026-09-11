@@ -4,10 +4,11 @@ import { processEvents, syncMode } from './screens.js';
 import { updateHud } from './hud.js';
 import { drawFrame } from '../render.js';
 
-// 依顯示尺寸重設畫布解析度與座標變換。
+// 依顯示尺寸重設畫布解析度與座標變換，並快取觸控換算用的版面矩形。
 export function resize(S) {
   const rect = S.canvas.getBoundingClientRect(),
     ratio = Math.min(devicePixelRatio || 1, 2);
+  S.canvasRect = { width: rect.width, height: rect.height };
   S.canvas.width = Math.max(1, Math.round(rect.width * ratio));
   S.canvas.height = Math.max(1, Math.round(rect.height * ratio));
   S.ctx?.setTransform(S.canvas.width / WIDTH, 0, 0, S.canvas.height / HEIGHT, 0, 0);

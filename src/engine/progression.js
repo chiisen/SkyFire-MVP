@@ -85,9 +85,11 @@ export function updateDrops(dt) {
       drop.dead = true;
       continue;
     }
-    const distance = Math.sqrt(dist2(drop, p)),
+    const d2 = dist2(drop, p),
       magnet = 50 + this.upgrades.magnet * 32;
-    if (distance < magnet && distance > 1) {
+    // 先用距離平方比較：只有進入吸附圈才開根號算方向，場上多數掉落走漂移分支。
+    if (d2 < magnet * magnet && d2 > 1) {
+      const distance = Math.sqrt(d2);
       drop.x += ((p.x - drop.x) / distance) * 210 * dt;
       drop.y += ((p.y - drop.y) / distance) * 210 * dt;
     } else {
