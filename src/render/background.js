@@ -331,20 +331,100 @@ export function orbit(c, t) {
   c.restore();
 }
 
-// 依關卡鋪漸層底色並調度對應場景，再疊加陰影與掃描線。
+// 靜層快取：底色漸層只與關卡有關，遮罩＋掃描線與關卡無關。
+// 每幀新建漸層＋200 次掃描線描邊是背景最大開銷，改為離屏各畫一次、每幀兩次 drawImage 貼回。
+// 捲動地景（sea/canyon/factory/orbit）仍逐幀繪製，視覺順序與舊路徑一致：底色 → 地景 → 遮罩 → 掃描線。
+const baseCache = new Map();
+let overlayCache = null;
+
+// 建立與邏輯舞台同尺寸的離屏畫布；無 DOM 環境（如單元測試）回傳空。
+function makeLayer() {
+  try {
+    if (typeof document !== 'undefined' && document.createElement) {
+      const el = document.createElement('canvas');
+      el.width = W;
+      el.height = H;
+      const ctx = el.getContext('2d');
+      if (ctx) return [el, ctx];
+    } else if (typeof OffscreenCanvas !== 'undefined') {
+      const el = new OffscreenCanvas(W, H);
+      const ctx = el.getContext('2d');
+      if (ctx) return [el, ctx];
+    }
+  } catch {
+    /* 無畫布環境時退回逐幀繪製。 */
+  }
+  return null;
+}
+
+// 取指定關卡的底色靜層；建一次後重複貼用。
+function getBase(stage) {
+  const key = stage | 0;
+  if (baseCache.has(key)) return baseCache.get(key);
+  const layer = makeLayer();
+  if (!layer) return null;
+  const [el, ctx] = layer;
+  const p = PAL[key] || PAL[0];
+  const gradient = ctx.createLinearGradient(0, 0, W, H);
+  gradient.addColorStop(0, p[1]);
+  gradient.addColorStop(0.46, p[0]);
+  gradient.addColorStop(1, p[1]);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, W, H);
+  baseCache.set(key, el);
+  return el;
+}
+
+// 取共用的遮罩＋掃描線靜層；五關同一張。
+function getOverlay() {
+  if (overlayCache) return overlayCache;
+  const layer = makeLayer();
+  if (!layer) return null;
+  const [el, ctx] = layer;
+  const shade = ctx.createLinearGradient(0, 0, W, 0);
+  shade.addColorStop(0, '#03091366');
+  shade.addColorStop(0.2, 'transparent');
+  shade.addColorStop(0.8, 'transparent');
+  shade.addColorStop(1, '#03091366');
+  ctx.fillStyle = shade;
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#b4d7e10b';
+  ctx.lineWidth = 1;
+  for (let y = 0; y < H; y += 4) {
+    ctx.beginPath();
+    ctx.moveTo(0, y + 0.5);
+    ctx.lineTo(W, y + 0.5);
+    ctx.stroke();
+  }
+  overlayCache = el;
+  return el;
+}
 
 // 依關卡鋪漸層底色並調度對應場景，再疊加陰影與掃描線。
 export function background(c, stage, time) {
-  const p = PAL[stage],
+  const s = stage | 0;
+  const base = getBase(s);
+  const overlay = getOverlay();
+  if (base && overlay && typeof c.drawImage === 'function') {
+    c.drawImage(base, 0, 0, W, H);
+    if (s === 0) sea(c, time);
+    else if (s === 1 || s === 2) canyon(c, time, s === 2);
+    else if (s === 3) factory(c, time);
+    else orbit(c, time);
+    // 寬陰影讓彈道沉穩，同時保留可見地形。
+    c.drawImage(overlay, 0, 0, W, H);
+    return;
+  }
+  const p = PAL[s],
     gradient = c.createLinearGradient(0, 0, W, H);
   gradient.addColorStop(0, p[1]);
   gradient.addColorStop(0.46, p[0]);
   gradient.addColorStop(1, p[1]);
   c.fillStyle = gradient;
   c.fillRect(0, 0, W, H);
-  if (stage === 0) sea(c, time);
-  else if (stage === 1 || stage === 2) canyon(c, time, stage === 2);
-  else if (stage === 3) factory(c, time);
+  if (s === 0) sea(c, time);
+  else if (s === 1 || s === 2) canyon(c, time, s === 2);
+  else if (s === 3) factory(c, time);
   else orbit(c, time);
   // 寬陰影讓彈道沉穩，同時保留可見地形。
   const shade = c.createLinearGradient(0, 0, W, 0);
@@ -362,6 +442,15 @@ export function background(c, stage, time) {
     c.lineTo(W, y + 0.5);
     c.stroke();
   }
+}
+
+// 測試鉤子：查詢快取狀態與清空快取（不影響遊戲邏輯）。
+export function __backgroundCacheStats() {
+  return { bases: baseCache.size, hasOverlay: !!overlayCache };
+}
+export function __clearBackgroundCache() {
+  baseCache.clear();
+  overlayCache = null;
 }
 
 // 繪製引擎尾焰漸層火焰，表現推進器閃爍的推進效果。
