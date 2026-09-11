@@ -36,7 +36,7 @@
 - 原生 JavaScript（ES Modules），Canvas 2D，Web Audio；無框架、無外部字體/圖片/音檔、無帳號/API Key。
 - 邏輯畫布 480×800；手機與桌面共用同一碰撞邏輯與戰鬥計時，不隨實體像素改變。
 - 須可經 `file://` 以外之 HTTP 方式遊玩；建置與測試僅用 Node.js 內建模組。
-- 本機運行：`python3 -m http.server 4173` 後開 `http://localhost:4173`；測試：`npm test`；建置：`npm run build`（複製運行檔至 `dist/`，靜態託管即可發布）。
+- 本機運行：`python3 -m http.server 4173` 後開 `http://localhost:4173`；測試：`npm test`；建置：`npm run build`（鏡像運行檔至 `dist/` 並 minify，靜態託管即可發布）。
 
 ## 4. 玩法規格
 
@@ -107,7 +107,7 @@
 | `src/audio.js`     | 自 Thunderfall 移植（§2）                                                    |
 | `src/app.js`       | 頁面進入點：建立狀態、接線、開主迴圈                                         |
 | `src/app/`         | 子模組：`state` 狀態／`hud` 介面／`screens` 流程／`input` 接線／`frame` 迴圈 |
-| `build.mjs`        | 零依賴建置，輸出 `dist/`（鏡像原始碼佈局）                                   |
+| `build.mjs`        | 零依賴建置，輸出 `dist/`（鏡像原始碼佈局＋minify）                           |
 | `tests/`           | 引擎單元測試（§8）                                                           |
 | `icon.svg`         | 自 Thunderfall 複用                                                          |
 

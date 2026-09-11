@@ -6,7 +6,7 @@
 - 手機觸控與桌面鍵鼠皆可遊玩
 - 完整規格見 [SPEC.md](./SPEC.md)
 
-![demo](./images/demo.png)
+![demo](./images/demo.webp)
 
 ## 啟動遊戲
 
@@ -46,7 +46,7 @@ python -m http.server 4173
 
 ### 建置（`npm run build`）
 
-`build.mjs` 只用 Node.js 內建模組，把運行檔鏡像複製到 `dist/`（`index.html` 的 `./src/` 參照不變）：
+`build.mjs` 只用 Node.js 內建模組，把運行檔鏡像到 `dist/` 並做 minify（JS/CSS 剝註解壓空白，佈局與檔名不變，`index.html` 的 `./src/` 參照不變；每個輸出 JS 都過 `node --check`）：
 
 ```powershell
 npm run build
@@ -89,7 +89,7 @@ dist/
 | `src/airframes.js`                    | 戰機三維網格：建模、投影、九種側傾姿態快取                   |
 | `src/audio.js`                        | 合成聲音：Web Audio 即時合成音效與背景音樂步進器，無音檔     |
 | `icon.svg`                            | 瀏覽器分頁圖示                                               |
-| `build.mjs`                           | 零依賴建置：複製 9 個運行檔至 `dist/`                        |
+| `build.mjs`                           | 零依賴建置：鏡像至 `dist/` 並 minify（含 `--check` 自檢）    |
 | `tests/engine.test.mjs`               | 引擎單元測試：27 項（Node 內建 `node:test`）                 |
 | `tests/render.smoke.mjs`              | 無頭渲染煙測：戰鬥＋機庫各跑一幀                             |
 | `tests/app.boot.mjs`                  | 開機煙測：DOM stub 走真實監聽器驗證開局／暫停／炸彈          |

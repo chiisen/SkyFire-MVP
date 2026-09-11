@@ -17,6 +17,7 @@
 - 零配置容器：子彈命中集改小陣列、六處每幀過濾原地化、特效與掉落定額輪寫；附 `tests/perf.test.mjs` 6 項回歸測試
 - 敵彈體 sprite 預渲染：圓彈本體按色按徑烘焙、每顆一次貼圖（2 倍超採樣，拖尾與詭雷維持向量）；附 `tests/sprite.test.mjs` 5 項回歸測試
 - 尾焰 sprite 預渲染：同規格尾焰烘焙一次、每朵一次貼圖（縱向隨閃爍縮放，首領維持向量）；`tests/sprite.test.mjs` 追加 3 項回歸測試
+- 圖片與建置：`demo.png`（136K）轉 `demo.webp`（16K）；`build.mjs` 零依賴 minify（JS/CSS 剝註解壓空白，佈局檔名不變，約小 29%，逐檔 `node --check`）；附 `tests/build.test.mjs` 3 項回歸測試（產物存在、更小、與源碼行為一致）
 
 ### 新增
 
