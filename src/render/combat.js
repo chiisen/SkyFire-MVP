@@ -47,6 +47,52 @@ export function beam(c, b, time, reduced) {
   c.restore();
 }
 
+// 敵彈體 sprite 快取：圓彈本體三圈弧線只與顏色半徑有關，烘焙一次、每顆一次貼圖。
+// 拖尾方向隨速度而變、詭雷會自轉，仍逐幀繪製；2 倍超採樣保持高 DPR 清晰度。
+const SPRITE_SS = 2;
+const spriteCache = new Map();
+
+function makeSpriteCanvas(size) {
+  try {
+    if (typeof document !== 'undefined' && document.createElement) {
+      const el = document.createElement('canvas');
+      el.width = size;
+      el.height = size;
+      const ctx = el.getContext('2d');
+      if (ctx) return [el, ctx];
+    } else if (typeof OffscreenCanvas !== 'undefined') {
+      const el = new OffscreenCanvas(size, size);
+      const ctx = el.getContext('2d');
+      if (ctx) return [el, ctx];
+    }
+  } catch {
+    /* 無畫布環境時退回向量繪製。 */
+  }
+  return null;
+}
+
+// 取指定顏色半徑的彈體 sprite（參數 color、r，回傳 {el, half} 或空）。
+function bulletSprite(color, r) {
+  const key = `${color}|${r.toFixed(1)}`;
+  if (spriteCache.has(key)) return spriteCache.get(key);
+  const R = r + 1.1,
+    pad = 1.5,
+    half = R + pad,
+    size = Math.ceil(half * 2 * SPRITE_SS);
+  const layer = makeSpriteCanvas(size);
+  if (!layer) return null;
+  const [el, ctx] = layer;
+  ctx.scale(SPRITE_SS, SPRITE_SS);
+  ctx.translate(half, half);
+  circle(ctx, 0, 0, R, '#432839', '#ff9b7d', 0.9);
+  circle(ctx, 0, 0, r * 0.75, color);
+  circle(ctx, -r * 0.13, -r * 0.2, r * 0.4, '#fff0cf');
+  const sprite = { el, half };
+  if (spriteCache.size >= 24) spriteCache.clear();
+  spriteCache.set(key, sprite);
+  return sprite;
+}
+
 // 繪製玩家與敵方子彈，區分彈種顏色、拖尾與外形。
 
 // 繪製玩家與敵方子彈，區分彈種顏色、拖尾與外形。
@@ -104,9 +150,14 @@ export function projectile(c, b, player = false) {
     circle(c, 0, 0, r * 0.55, '#fff0c8');
     c.restore();
   } else {
-    circle(c, x, y, r + 1.1, '#432839', '#ff9b7d', 0.9);
-    circle(c, x, y, r * 0.75, color);
-    circle(c, x - r * 0.13, y - r * 0.2, r * 0.4, '#fff0cf');
+    const sprite = bulletSprite(color, r);
+    if (sprite && typeof c.drawImage === 'function') {
+      c.drawImage(sprite.el, x - sprite.half, y - sprite.half, sprite.half * 2, sprite.half * 2);
+    } else {
+      circle(c, x, y, r + 1.1, '#432839', '#ff9b7d', 0.9);
+      circle(c, x, y, r * 0.75, color);
+      circle(c, x - r * 0.13, y - r * 0.2, r * 0.4, '#fff0cf');
+    }
   }
 }
 
@@ -200,6 +251,14 @@ export function effect(c, e, reduced) {
     circle(c, e.x, e.y, Math.max(1, size * remain * 0.18), color);
   }
   c.restore();
+}
+
+// 測試鉤子：查詢快取數量與清空快取（不影響遊戲邏輯）。
+export function __spriteCacheStats() {
+  return { sprites: spriteCache.size };
+}
+export function __clearSpriteCache() {
+  spriteCache.clear();
 }
 
 // 組裝整幀畫面：背景彈幕敵我掉落與特效，含機庫展示模式。
