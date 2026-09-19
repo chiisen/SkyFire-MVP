@@ -242,6 +242,8 @@
       </button>
     </dialog>
     <noscript>此遊戲需要 JavaScript。請開啟後重新載入。</noscript>
-    <script type="module" src="./src/app.js"></script>
+    <script type="module">
+      import(`./src/app.js?v=${Date.now()}`);
+    </script>
   </body>
 </html>

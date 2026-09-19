@@ -17,7 +17,7 @@ cd D:\github\chiisen\SkyFire-MVP
 npm start
 ```
 
-再以瀏覽器開啟 `http://localhost:4173`。此伺服器會依原始碼內容在 `import`／`src` 加上 `?v=指紋`，並送 `Cache-Control: no-store`，避免瀏覽器一直用舊的 `.js`。請不要用 `python -m http.server` 開發（它不會改寫模組 URL，容易卡快取）。port 被佔用可設環境變數 `PORT`。
+再以瀏覽器開啟 `http://localhost:4173`。每次載入會換新的 `?v=`，並把同一指紋寫進整條 `import` 鏈，標頭為 `Cache-Control: no-store`，一般重新整理即可拿到新檔，不必開無痕。請不要用 `python -m http.server` 開發。port 被佔用可設環境變數 `PORT`。若仍看到舊畫面，先關掉舊的 Python／其他伺服器再 `npm start`。
 
 ## 玩法說明
 

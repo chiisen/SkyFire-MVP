@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { contentStamp, stampHtmlAssets, stampModuleSpecifiers } from '../cachebust.mjs';
+import { contentStamp, stampFromRequestUrl, stampHtmlAssets, stampModuleSpecifiers } from '../cachebust.mjs';
 
 describe('模組快取破壞', () => {
   it('相對 from／export 與 side-effect import 都加上指紋', () => {
@@ -25,6 +25,11 @@ describe('模組快取破壞', () => {
     );
     assert.equal(html.includes('href="./src/style.css?v=abc123"'), true);
     assert.equal(html.includes('src="./src/app.js?v=abc123"'), true);
+  });
+
+  it('請求 URL 的 ?v= 作為整條模組鏈指紋', () => {
+    assert.equal(stampFromRequestUrl('/src/app.js?v=1712000000000', 'fallback'), '1712000000000');
+    assert.equal(stampFromRequestUrl('/src/app.js', 'fallback'), 'fallback');
   });
 
   it('內容指紋為十碼十六進位且穩定', async () => {

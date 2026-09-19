@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { contentStamp, stampHtmlAssets, stampModuleSpecifiers } from './cachebust.mjs';
+import { stampFromRequestUrl, stampHtmlAssets, stampModuleSpecifiers } from './cachebust.mjs';
 
 const ROOT = fileURLToPath(new URL('./', import.meta.url));
 const PORT = Number(process.env.PORT) || 4173;
@@ -42,13 +42,15 @@ const server = createServer(async (req, res) => {
     const ext = extname(file);
     let body = await readFile(file);
     if (ext === '.js' || ext === '.html') {
-      const stamp = await contentStamp();
+      const stamp = stampFromRequestUrl(req.url || '/', String(Date.now()));
       const text = body.toString('utf8');
       body = Buffer.from(ext === '.js' ? stampModuleSpecifiers(text, stamp) : stampHtmlAssets(text, stamp));
     }
     res.writeHead(200, {
       'Content-Type': MIME[ext] || 'application/octet-stream',
-      'Cache-Control': 'no-store',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+      Pragma: 'no-cache',
+      Expires: '0',
     });
     res.end(body);
   } catch (err) {

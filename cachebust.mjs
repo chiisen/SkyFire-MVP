@@ -1,6 +1,16 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile, stat } from 'node:fs/promises';
 
+// 從請求 URL 取出 ?v=，讓同一頁的整條 import 鏈共用同一指紋。
+export function stampFromRequestUrl(urlPath, fallback) {
+  try {
+    const v = new URL(urlPath, 'http://local.test').searchParams.get('v');
+    return v || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 // 為相對模組路徑加上 ?v=指紋，讓瀏覽器把每次建置當成新 URL。
 export function stampModuleSpecifiers(code, stamp) {
   return code

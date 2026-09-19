@@ -1,20 +1,16 @@
 import SHIPS from '../data/ships.json' with { type: 'json' };
 
-// 沿機身與機翼畫閃爍電弧，展示與戰鬥皆疊在機體之上。
+// 兩道電弧：機身前段接到左右翼尖。
 const ENERGY_PATHS = [
   [
-    [0, -40, 8],
-    [0, 16, 5],
-  ],
-];
-const BOOST_PATHS = [
-  [
-    [-8, -12, 6],
-    [-36, 4, 3],
+    [0, -32, 8],
+    [-26, -6, 6],
+    [-52, 14, 3],
   ],
   [
-    [8, -12, 6],
-    [36, 4, 3],
+    [0, -32, 8],
+    [26, -6, 6],
+    [52, 14, 3],
   ],
 ];
 
@@ -23,25 +19,36 @@ function frac(n) {
   return s - Math.floor(s);
 }
 
+function samplePath(points, segs) {
+  const out = [];
+  for (let s = 0; s < points.length - 1; s++) {
+    const a = points[s],
+      z = points[s + 1];
+    for (let i = s === 0 ? 0 : 1; i <= segs; i++) {
+      const t = i / segs;
+      out.push([a[0] + (z[0] - a[0]) * t, a[1] + (z[1] - a[1]) * t, a[2] + (z[2] - a[2]) * t]);
+    }
+  }
+  return out;
+}
+
 export function energy(c, transform, time, shipId, { boost = false, reducedMotion = false } = {}) {
   const tint = (SHIPS[shipId] || SHIPS[0]).energyColor;
   const pulse = reducedMotion ? 0.55 : 0.42 + 0.38 * Math.abs(Math.sin(time * 9));
   const jitter = reducedMotion ? 0 : boost ? 7.5 : 5.2;
   const segs = reducedMotion ? 3 : 5;
-  const paths = boost ? ENERGY_PATHS.concat(BOOST_PATHS) : ENERGY_PATHS;
   c.save();
   c.lineJoin = 'round';
   c.lineCap = 'round';
-  for (let b = 0; b < paths.length; b++) {
-    const [a, z] = paths[b];
-    if (b > 0 && !reducedMotion && frac(Math.floor(time * 6) + b * 3.1) < 0.45) continue;
+  for (let b = 0; b < ENERGY_PATHS.length; b++) {
+    const pts = samplePath(ENERGY_PATHS[b], segs);
     c.beginPath();
-    for (let i = 0; i <= segs; i++) {
-      const t = i / segs;
-      const edge = i === 0 || i === segs ? 0 : 1;
+    for (let i = 0; i < pts.length; i++) {
+      const edge = i === 0 || i === pts.length - 1 ? 0 : 1;
       const jx = (frac(time * 19 + b * 8 + i) - 0.5) * jitter * edge;
       const jz = (frac(time * 14 + b * 5 + i + 4) - 0.5) * jitter * 0.55 * edge;
-      const p = transform([a[0] + (z[0] - a[0]) * t + jx, a[1] + (z[1] - a[1]) * t, a[2] + (z[2] - a[2]) * t + jz]);
+      const q = pts[i];
+      const p = transform([q[0] + jx, q[1], q[2] + jz]);
       if (i === 0) c.moveTo(p[0], p[1]);
       else c.lineTo(p[0], p[1]);
     }
