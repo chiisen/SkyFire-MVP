@@ -1,5 +1,6 @@
 import { drawAirframe as drawShip } from './airframes.js';
 export { drawShip };
+import { SHIPS } from './data.js';
 import { W, H, TAU, clamp, line, circle } from './render/shared.js';
 import { background } from './render/background.js';
 import { enemy } from './render/units.js';
@@ -17,10 +18,15 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
   c.clip();
   background(c, stage, reducedMotion ? 0 : idle ? idleTime : t);
   if (idle) {
+    const livery = SHIPS[clamp(game.player?.shipId | 0, 0, 2)].color;
     c.save();
     c.translate(240, 230);
-    c.strokeStyle = '#92d3e020';
-    c.lineWidth = 1;
+    c.fillStyle = `${livery}55`;
+    c.beginPath();
+    c.arc(0, 0, 128, 0, TAU);
+    c.fill();
+    c.strokeStyle = `${livery}aa`;
+    c.lineWidth = 2;
     for (const r of [73, 116, 146]) {
       c.beginPath();
       c.arc(0, 0, r, 0, TAU);
@@ -34,7 +40,7 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
           [Math.cos(a) * 139, Math.sin(a) * 139],
           [Math.cos(a) * 146, Math.sin(a) * 146],
         ],
-        '#a3d8e14a'
+        `${livery}66`
       );
     }
     line(
@@ -43,7 +49,7 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
         [-184, 0],
         [-157, 0],
       ],
-      '#a3d8e133'
+      `${livery}88`
     );
     line(
       c,
@@ -51,7 +57,7 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
         [157, 0],
         [184, 0],
       ],
-      '#a3d8e133'
+      `${livery}88`
     );
     c.restore();
     drawShip(

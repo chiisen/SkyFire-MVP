@@ -26,9 +26,13 @@ export function camera(bank, showcase, time) {
 // 依面法線計算漫反射與鏡面光，輸出填色字串。
 export function shade(mat, normal, tint = 0) {
   if (mat.glow) return `rgb(${mat.rgb.join(',')})`;
+  if (mat.flat) {
+    const lift = 0.78 + Math.max(0, dot(normal, LIGHT)) * 0.28;
+    return `rgb(${mat.rgb.map((v) => Math.round(clamp(v * lift + tint, 0, 255))).join(',')})`;
+  }
   const diffuse = 0.42 + Math.max(0, dot(normal, LIGHT)) * 0.64;
-  const spec = Math.pow(Math.max(0, dot(normal, HALF)), 22) * mat.shine * 155;
-  return `rgb(${mat.rgb.map((v, i) => Math.round(clamp(v * diffuse + spec + tint + [1, 3, 6][i], 0, 255))).join(',')})`;
+  const spec = Math.pow(Math.max(0, dot(normal, HALF)), 22) * mat.shine * 90;
+  return `rgb(${mat.rgb.map((v) => Math.round(clamp(v * diffuse + spec + tint, 0, 255))).join(',')})`;
 }
 // 背面剔除並依深度排序填色，將網格投影至畫布。
 export function paintMesh(c, model, transform) {

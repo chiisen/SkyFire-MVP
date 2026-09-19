@@ -15,16 +15,18 @@ export const sub = (a, b) => a.map((v, i) => v - b[i]);
 // 內積計算光照夾角，驅動漫反射與鏡面反射強度。
 export const dot = (a, b) => a.reduce((sum, v, i) => sum + v * b[i], 0);
 // 建立材質參數，統一顏色、亮光與發光屬性。
-export const material = (rgb, shine = 0.25, glow = false) => ({ rgb, shine, glow });
+export const material = (rgb, shine = 0.25, glow = false, flat = false) => ({ rgb, shine, glow, flat });
 export const M = {
-  silver: material([211, 218, 225], 0.8),
+  silver: material([214, 214, 210], 0.45),
+  chrome: material([232, 236, 240], 0.42, false, true),
   white: material([239, 234, 218], 0.48),
-  steel: material([103, 126, 150], 0.85),
-  dark: material([24, 33, 47], 0.28),
-  black: material([8, 14, 24], 0.08),
+  steel: material([156, 152, 144], 0.32),
+  dark: material([38, 36, 32], 0.18),
+  black: material([18, 16, 14], 0.08),
   red: material([181, 30, 43], 0.53),
   blue: material([33, 100, 204], 0.65),
-  gold: material([209, 153, 52], 0.65),
+  gold: material([255, 196, 40], 0.28, false, true),
+  bronze: material([212, 84, 24], 0.26, false, true),
   amber: material([178, 121, 37], 1),
   glass: material([19, 69, 104], 1),
   cyan: material([109, 236, 255], 0.5, true),

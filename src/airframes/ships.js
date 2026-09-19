@@ -1,4 +1,4 @@
-import { M } from './math.js';
+import { M, material } from './math.js';
 import {
   armor,
   canopy,
@@ -16,9 +16,9 @@ import {
 // 依機體編號組裝三款戰機網格，並回傳模型資料。
 export function makeAirframe(id) {
   const model = { faces: [], engines: [], id };
-  const paint = [M.red, M.blue, M.gold][id];
+  const paint = [M.gold, M.chrome, M.bronze][id];
   if (id === 0) {
-    // 緋紅攔截機：後掠翼、長針形機頭與分離式引擎艙。
+    // 金色攔截機：後掠翼、長針形機頭與分離式引擎艙。
     mirrored(
       model,
       [
@@ -70,11 +70,11 @@ export function makeAirframe(id) {
       ],
       0,
       4,
-      M.silver
+      paint
     );
     for (const s of [-1, 1]) {
       engine(model, s * 18, 13, 8.6, paint);
-      cannon(model, s * 43, 1, M.silver, 31);
+      cannon(model, s * 43, 1, paint, 31);
       fin(model, s * 13, 20, 24, paint, s * 0.12);
       markings(model, s, 34, 0, 4.7, 0);
       panel(
@@ -137,7 +137,7 @@ export function makeAirframe(id) {
     );
     canopy(model);
   } else if (id === 1) {
-    // 鈷藍突擊機：前掠翼與一對長加速軌。
+    // 銀色突擊機：前掠翼與一對長加速軌。
     mirrored(
       model,
       [
@@ -163,7 +163,7 @@ export function makeAirframe(id) {
       ],
       3.85,
       5.2,
-      M.silver
+      paint
     );
     mirrored(
       model,
@@ -219,7 +219,7 @@ export function makeAirframe(id) {
         [28, 6, 5, 1],
         [45, 2, 1, 2],
       ],
-      M.silver
+      paint
     );
     fuselage(
       model,
@@ -234,7 +234,7 @@ export function makeAirframe(id) {
     );
     canopy(model, true);
   } else {
-    // 裝甲砲艇：寬肩、四門砲管與加大引擎。
+    // 銅色裝甲砲艇：寬肩、四門砲管與加大引擎。
     mirrored(
       model,
       [
@@ -260,7 +260,7 @@ export function makeAirframe(id) {
       ],
       4.6,
       7,
-      M.silver
+      paint
     );
     mirrored(
       model,
@@ -277,7 +277,7 @@ export function makeAirframe(id) {
     for (const s of [-1, 1]) {
       engine(model, s * 22, 13, 10.5, paint);
       for (const dx of [-2.1, 2.1]) cannon(model, s * 47 + dx, -4, M.steel, 29);
-      fin(model, s * 18, 22, 22, M.silver, s * 0.16);
+      fin(model, s * 18, 22, 22, paint, s * 0.16);
       markings(model, s, 40, -2, 7.1, 2);
       servicePanel(
         model,
@@ -315,7 +315,7 @@ export function makeAirframe(id) {
         [33, 9, 5, 0],
         [42, 5, 2, 1],
       ],
-      M.silver
+      paint
     );
     fuselage(
       model,
@@ -335,6 +335,26 @@ export function makeAirframe(id) {
       y = id === 1 ? -30 : 18;
     rect(model, x - 1, y, 2, 3, 5.4, s < 0 ? M.hot : M.cyan);
   }
+  stainMetal(model, paint);
   return model;
+}
+
+// 把鋼、暗面、銀邊拉向該機主色，避免藍灰骨架蓋過金銀銅。
+function stainMetal(model, paint) {
+  const steel = mixMat(M.steel, paint, 0.45);
+  const dark = mixMat(M.dark, paint, 0.28);
+  const silver = mixMat(M.silver, paint, 0.35);
+  for (const f of model.faces) {
+    if (f.mat === M.steel) f.mat = steel;
+    else if (f.mat === M.dark) f.mat = dark;
+    else if (f.mat === M.silver) f.mat = silver;
+  }
+}
+
+function mixMat(base, paint, t) {
+  return material(
+    base.rgb.map((v, i) => Math.round(v * (1 - t) + paint.rgb[i] * t)),
+    base.shine
+  );
 }
 export const AIRFRAMES = [0, 1, 2].map(makeAirframe);
