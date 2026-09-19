@@ -1,13 +1,13 @@
 @charset "UTF-8";
 :root {
   color-scheme: dark;
-  --bg: #080f18;
-  --surface: #101d2b;
+  --bg: #081410;
+  --surface: #10211a;
   --line: #ffffff16;
-  --ink: #edf4f8;
-  --muted: #8d9eae;
+  --ink: #e8f4ee;
+  --muted: #8aa89a;
   --accent: #f3af65;
-  --cyan: #89d9ed;
+  --cyan: #89edc4;
   --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   --body: Inter, 'Avenir Next', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --stage-w: min(480px, calc((100svh - 244px) * 0.6));
@@ -29,7 +29,7 @@ body:before {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 51% 5%, #18384a33, transparent 58%),
+    radial-gradient(ellipse at 51% 5%, #184a3833, transparent 58%),
     linear-gradient(90deg, transparent 49.9%, #ffffff02 50%, transparent 50.1%);
   z-index: -1;
 }
@@ -131,7 +131,7 @@ a {
   margin-top: 3px;
 }
 .header-meta {
-  color: #8396a7;
+  color: #7ea894;
   font: 10px var(--mono);
   letter-spacing: 1.4px;
   display: flex;
@@ -140,7 +140,7 @@ a {
 }
 .divider {
   margin: 0 12px;
-  color: #344958;
+  color: #34584a;
 }
 .status-dot,
 .orange-dot {
@@ -215,7 +215,7 @@ h1 {
 }
 h1 > span {
   display: block;
-  -webkit-text-stroke: 1px #c2d3de;
+  -webkit-text-stroke: 1px #c2ded4;
   color: transparent;
   letter-spacing: 1px;
 }
@@ -229,7 +229,7 @@ h1 > span {
   font-weight: 600;
 }
 .intro {
-  color: #8396a5;
+  color: #7ea894;
   font-size: 13px;
   line-height: 1.85;
   margin: 16px 0 32px;
@@ -244,10 +244,10 @@ h1 > span {
 .section-heading > span {
   font-size: 12px;
   letter-spacing: 2px;
-  color: #bdcad3;
+  color: #bdd3c8;
 }
 .section-heading small {
-  color: #647b8c;
+  color: #648c78;
   font: 9px var(--mono);
   letter-spacing: 0.6px;
 }
@@ -275,7 +275,7 @@ h1 > span {
   bottom: 3px;
   left: 14px;
   width: 1px;
-  background: #4d64774d;
+  background: #4d77624d;
 }
 .route-section li:last-child:before {
   display: none;
@@ -286,7 +286,7 @@ h1 > span {
 .route-number {
   width: 29px;
   height: 29px;
-  border: 1px solid #476072;
+  border: 1px solid #477260;
   display: grid;
   place-items: center;
   font: 10px var(--mono);
@@ -315,13 +315,13 @@ h1 > span {
 }
 .route-section small {
   font: 8px var(--mono);
-  color: #8d9eae;
+  color: #8aa89a;
   letter-spacing: 1px;
 }
 .route-section .route-time {
   margin-left: auto;
   font: 9px var(--mono);
-  color: #a1b2bf;
+  color: #a1bfb0;
 }
 .best-record {
   border-top: 1px solid var(--line);
@@ -340,7 +340,7 @@ h1 > span {
 }
 .best-record small {
   font-size: 10px;
-  color: #677e90;
+  color: #67907c;
 }
 .arcade {
   width: var(--stage-w);
@@ -356,9 +356,9 @@ h1 > span {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid #334454;
-  background: #0b1723;
-  color: #839bac;
+  border: 1px solid #334a44;
+  background: #0b2318;
+  color: #83ac9a;
   font: 8px var(--mono);
   letter-spacing: 1px;
 }
@@ -366,7 +366,7 @@ h1 > span {
   border-bottom: 0;
 }
 .cabinet-top > span:first-child {
-  color: #c9d7df;
+  color: #c9dfd4;
 }
 .cabinet-top i {
   display: inline-block;
@@ -378,8 +378,8 @@ h1 > span {
 .stage {
   position: relative;
   aspect-ratio: 3/5;
-  border: 1px solid #334454;
-  background: #091c2b;
+  border: 1px solid #334a44;
+  background: #091c14;
   overflow: hidden;
   isolation: isolate;
   container-type: inline-size;
@@ -402,7 +402,7 @@ canvas:focus:not(:focus-visible) {
   right: 0;
   padding: 14px 16px 0;
   pointer-events: none;
-  background: linear-gradient(#07131fed, transparent);
+  background: linear-gradient(#071f13ed, transparent);
   z-index: 2;
 }
 .hud-top {
@@ -415,7 +415,7 @@ canvas:focus:not(:focus-visible) {
 }
 .hud small {
   font: 9px var(--mono);
-  color: #9fb0bf;
+  color: #9fbfb0;
   display: block;
   letter-spacing: 1px;
 }
@@ -437,7 +437,7 @@ canvas:focus:not(:focus-visible) {
 }
 .hud button {
   pointer-events: auto;
-  background: #09131a80;
+  background: #091a1380;
   min-width: 38px;
   min-height: 44px;
 }
@@ -456,14 +456,14 @@ canvas:focus:not(:focus-visible) {
   background: #f3af65;
 }
 .vitals #shield i {
-  background: #7aceff;
+  background: #7aecc8;
 }
 .vitals i.empty {
-  background: #53627255;
+  background: #53625a55;
 }
 .boss-hud {
   margin-top: 5px;
-  background: #06121dbf;
+  background: #061d12bf;
   padding: 8px 10px;
 }
 .boss-hud > div:first-child {
@@ -506,7 +506,7 @@ canvas:focus:not(:focus-visible) {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(#07131f55 0, transparent 43%, #07131fbf 52%, #07131ff0 100%);
+  background: linear-gradient(#071f1355 0, transparent 43%, #071f13bf 52%, #071f13f0 100%);
   padding: 0 22px;
 }
 .hangar-heading {
@@ -519,7 +519,7 @@ canvas:focus:not(:focus-visible) {
 .hangar-heading .eyebrow {
   font-size: 8px;
   letter-spacing: 1.6px;
-  color: #9bb9cc;
+  color: #9bccb9;
 }
 .hangar-heading h2 {
   font-size: clamp(21px, 6cqw, 29px);
@@ -528,7 +528,7 @@ canvas:focus:not(:focus-visible) {
   margin: 10px 0 4px;
 }
 .hangar-heading > p:last-child {
-  color: #8da3b4;
+  color: #8db4a3;
   font-size: 10px;
   letter-spacing: 1px;
 }
@@ -541,7 +541,7 @@ canvas:focus:not(:focus-visible) {
   justify-content: space-between;
   font: 8px var(--mono);
   letter-spacing: 1px;
-  color: #829aa8;
+  color: #82a898;
 }
 .ship-details > span:last-child {
   color: #82b8ba;
@@ -571,8 +571,8 @@ canvas:focus:not(:focus-visible) {
   gap: 7px;
 }
 .ship-choice {
-  border: 1px solid #a4c6e027;
-  background: #101d29b3;
+  border: 1px solid #a4e0c627;
+  background: #101d19b3;
   padding: 9px 4px 8px;
   min-height: 67px;
   text-align: center;
@@ -589,7 +589,7 @@ canvas:focus:not(:focus-visible) {
   background: transparent;
 }
 .ship-choice[aria-pressed='true'] {
-  background: #3b677a33;
+  background: #3b7a5a33;
   border-color: var(--ship-color);
 }
 .ship-choice[aria-pressed='true']:after {
@@ -610,7 +610,7 @@ canvas:focus:not(:focus-visible) {
 }
 .ship-choice span {
   display: block;
-  color: #8fa5b5;
+  color: #8fb5a2;
   font-size: 9px;
 }
 .ship-summary {
@@ -618,7 +618,7 @@ canvas:focus:not(:focus-visible) {
 }
 .ship-summary > p {
   font-size: 10px;
-  color: #a5b7c3;
+  color: #a5c3b4;
   text-align: center;
   min-height: 15px;
 }
@@ -627,11 +627,11 @@ canvas:focus:not(:focus-visible) {
   justify-content: center;
   gap: 17px;
   font: 9px var(--mono);
-  color: #839ba9;
+  color: #83a997;
   margin-top: 8px;
 }
 .ship-summary b {
-  color: #dce6ed;
+  color: #dcede6;
   font-weight: 500;
 }
 .run-options {
@@ -644,14 +644,14 @@ canvas:focus:not(:focus-visible) {
   align-items: center;
   gap: 12px;
   font-size: 10px;
-  color: #8da6b6;
+  color: #8db6a4;
 }
 .run-options select {
   min-width: 0;
   flex: 1;
-  background: #112331;
-  border: 1px solid #668b9e33;
-  color: #bdd0dd;
+  background: #11231a;
+  border: 1px solid #669e8333;
+  color: #bdddc8;
   padding: 7px 9px;
   min-height: 34px;
   border-radius: 2px;
@@ -663,7 +663,7 @@ canvas:focus:not(:focus-visible) {
   justify-content: space-between;
   gap: 12px;
   border: 1px solid var(--accent);
-  color: #141d25;
+  color: #141d19;
   background: var(--accent);
   padding: 15px 18px;
   min-height: 52px;
@@ -685,7 +685,7 @@ canvas:focus:not(:focus-visible) {
 }
 .start-hint {
   font-size: 9px;
-  color: #788f9f;
+  color: #789f88;
   letter-spacing: 0.4px;
   text-align: center;
   margin-top: -5px;
@@ -693,8 +693,8 @@ canvas:focus:not(:focus-visible) {
 .combat-controls {
   display: grid;
   grid-template-columns: 1fr 1.15fr 1fr;
-  background: #101f2d;
-  border: 1px solid #334454;
+  background: #101f18;
+  border: 1px solid #334a44;
   border-top: 0;
   gap: 0;
   height: 60px;
@@ -708,9 +708,9 @@ canvas:focus:not(:focus-visible) {
   justify-content: center;
   gap: 8px;
   border: 0;
-  border-right: 1px solid #334454;
+  border-right: 1px solid #334a44;
   background: transparent;
-  color: #c8d8e1;
+  color: #c8e1d4;
   min-height: 52px;
 }
 .combat-controls > button:last-child {
@@ -730,14 +730,14 @@ canvas:focus:not(:focus-visible) {
   display: block;
   font: 8px var(--mono);
   margin-top: 5px;
-  color: #7f9cad;
+  color: #7fad98;
   letter-spacing: 0.7px;
 }
 .combat-controls button:hover:not(:disabled) {
-  background: #284051;
+  background: #285140;
 }
 .combat-controls button[aria-pressed='true'] {
-  background: #233c4b;
+  background: #234b3c;
   color: var(--accent);
 }
 #charge-fill {
@@ -762,7 +762,7 @@ canvas:focus:not(:focus-visible) {
   letter-spacing: 0.6px;
 }
 #weapon-mini {
-  color: #93c9ec;
+  color: #93ecd0;
 }
 .right-panel h2 {
   font-size: 23px;
@@ -772,15 +772,15 @@ canvas:focus:not(:focus-visible) {
 .right-panel p:not(.eyebrow) {
   font-size: 12px;
   line-height: 1.9;
-  color: #8da4b4;
+  color: #8db4a0;
 }
 .weapon-emblem {
   width: 72px;
   height: 72px;
   margin-bottom: 19px;
-  border: 1px solid #5c9cd666;
-  color: #89caff;
-  background: linear-gradient(140deg, #365e7338, #11232b);
+  border: 1px solid #5cd69c66;
+  color: #89e0c4;
+  background: linear-gradient(140deg, #36735e38, #112b23);
   clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
   font: 36px var(--mono);
   display: grid;
@@ -794,10 +794,10 @@ canvas:focus:not(:focus-visible) {
 .weapon-level i {
   width: 23px;
   height: 3px;
-  background: #60788933;
+  background: #60897833;
 }
 .weapon-level i.active {
-  background: #89caff;
+  background: #89e0c4;
 }
 .supply-section {
   border-top: 1px solid var(--line);
@@ -818,12 +818,12 @@ canvas:focus:not(:focus-visible) {
   font: 15px var(--mono);
   display: grid;
   place-items: center;
-  background: #12303c44;
+  background: #123c3044;
 }
 .loot-key small {
   position: absolute;
   top: 38px;
-  color: #8ea2b1;
+  color: #8eb1a0;
   font-family: var(--body);
   font-size: 9px;
   white-space: nowrap;
@@ -846,7 +846,7 @@ canvas:focus:not(:focus-visible) {
 }
 .tactics-section dt {
   font: 10px var(--mono);
-  color: #627d8f;
+  color: #628f79;
   padding-top: 3px;
 }
 .tactics-section dd {
@@ -856,11 +856,11 @@ canvas:focus:not(:focus-visible) {
   display: block;
   font-size: 11px;
   font-weight: 500;
-  color: #bbcbd4;
+  color: #bbd4c8;
 }
 .tactics-section dd span {
   font-size: 10px;
-  color: #738a9b;
+  color: #739b86;
 }
 .project-note {
   border-top: 1px solid var(--line);
@@ -870,7 +870,7 @@ canvas:focus:not(:focus-visible) {
 .project-note > span {
   font: 8px var(--mono);
   letter-spacing: 1px;
-  color: #6a8495;
+  color: #6a9580;
 }
 .project-note p {
   font-size: 10px !important;
@@ -881,7 +881,7 @@ canvas:focus:not(:focus-visible) {
   padding: 9px 0;
   background: none;
   border: 0;
-  color: #7993a3;
+  color: #79a38d;
   min-height: 36px;
   font-size: 10px;
 }
@@ -891,7 +891,7 @@ canvas:focus:not(:focus-visible) {
   gap: 15px;
   border-top: 1px solid var(--line);
   padding: 15px 0 20px;
-  color: #526d80;
+  color: #52806a;
   font: 8px var(--mono);
   letter-spacing: 1px;
 }
@@ -899,7 +899,7 @@ canvas:focus:not(:focus-visible) {
   position: absolute;
   inset: 0;
   z-index: 5;
-  background: #030b14cd;
+  background: #03140bcd;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -920,7 +920,7 @@ canvas:focus:not(:focus-visible) {
 .overlay-card > p:not(.eyebrow) {
   font-size: 12px;
   line-height: 1.8;
-  color: #9cb0c1;
+  color: #9cc1b0;
 }
 .overlay-card .primary-button {
   width: 100%;
@@ -928,15 +928,15 @@ canvas:focus:not(:focus-visible) {
   margin-top: 14px;
 }
 .secondary-button {
-  border: 1px solid #7994a34d;
-  background: #1a303e7a;
+  border: 1px solid #79a3944d;
+  background: #1a3e307a;
   min-height: 45px;
   padding: 10px 14px;
-  color: #b7c9d4;
+  color: #b7d4c6;
   letter-spacing: 1px;
 }
 .secondary-button:hover {
-  background: #2b4355;
+  background: #2b5543;
 }
 #overlay-actions {
   display: flex;
@@ -956,13 +956,13 @@ canvas:focus:not(:focus-visible) {
   align-items: center;
   text-align: left;
   padding: 15px 12px;
-  background: #142936;
-  border: 1px solid #56768a65;
+  background: #143629;
+  border: 1px solid #568a7665;
   min-height: 74px;
 }
 .upgrade-choice:hover {
   border-color: var(--accent);
-  background: #2a3540;
+  background: #2a4035;
 }
 .upgrade-choice > span:first-child {
   font: 18px var(--mono);
@@ -975,7 +975,7 @@ canvas:focus:not(:focus-visible) {
 }
 .upgrade-choice small {
   font-size: 10px;
-  color: #8fa9b9;
+  color: #8fb9a5;
   display: block;
   margin-top: 4px;
 }
@@ -993,7 +993,7 @@ canvas:focus:not(:focus-visible) {
 }
 .result-grid small {
   display: block;
-  color: #7894a7;
+  color: #78a790;
   font-size: 10px;
   margin-bottom: 5px;
 }
@@ -1009,7 +1009,7 @@ canvas:focus:not(:focus-visible) {
   text-align: center;
   pointer-events: none;
   padding: 25px 10px;
-  background: linear-gradient(90deg, transparent, #071323db 12%, #071323db 88%, transparent);
+  background: linear-gradient(90deg, transparent, #072313db 12%, #072313db 88%, transparent);
   z-index: 3;
 }
 .stage-announcement small {
@@ -1026,7 +1026,7 @@ canvas:focus:not(:focus-visible) {
 }
 .stage-announcement span {
   font-size: 11px;
-  color: #a9becb;
+  color: #a9cbb8;
   display: block;
 }
 .toast {
@@ -1037,8 +1037,8 @@ canvas:focus:not(:focus-visible) {
   z-index: 6;
   pointer-events: none;
   text-align: center;
-  background: #152d3ae6;
-  border: 1px solid #7596a650;
+  background: #153a2de6;
+  border: 1px solid #75a69650;
   color: #ecdcba;
   padding: 10px;
   font-size: 11px;
@@ -1048,8 +1048,8 @@ canvas:focus:not(:focus-visible) {
   color: inherit;
 }
 dialog {
-  border: 1px solid #557183;
-  background: #101f2d;
+  border: 1px solid #558371;
+  background: #101f18;
   color: var(--ink);
   max-width: 720px;
   width: calc(100% - 32px);
@@ -1059,7 +1059,7 @@ dialog {
   box-shadow: 0 15px 90px #0007;
 }
 dialog::backdrop {
-  background: #02080dcf;
+  background: #020d08cf;
   backdrop-filter: blur(5px);
 }
 dialog > .icon-button {
@@ -1073,7 +1073,7 @@ dialog h2 {
   margin: 20px 0 15px;
 }
 dialog > p:not(.eyebrow) {
-  color: #9fb4c3;
+  color: #9fc3b2;
   line-height: 1.9;
   font-size: 13px;
 }
@@ -1092,7 +1092,7 @@ dialog > p:not(.eyebrow) {
   margin: 0;
   font-size: 12px;
   line-height: 1.9;
-  color: #8ea7b9;
+  color: #8eb9a3;
 }
 dialog .primary-button {
   width: 100%;
@@ -1635,13 +1635,13 @@ dialog .primary-button {
     display: flex;
     flex-direction: column;
     height: auto;
-    border-top: 1px solid #334454;
+    border-top: 1px solid #334a44;
     border-left: 0;
   }
   body.in-flight .combat-controls > button {
     flex: 1;
     border-right: 0;
-    border-bottom: 1px solid #334454;
+    border-bottom: 1px solid #334a44;
     gap: 9px;
   }
   body.in-flight .cabinet-bottom {
