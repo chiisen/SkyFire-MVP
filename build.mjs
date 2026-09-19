@@ -1,6 +1,7 @@
 import { mkdir, copyFile, rm, readFile, writeFile, readdir, stat } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { contentStamp, stampHtmlAssets, stampModuleSpecifiers } from './cachebust.mjs';
 
 // 零依賴 minify：字串感知（單/雙引號、模板字面量含 ${} 巢狀），只剝註解並壓空白。
 // 約束：原始碼不得含正則字面量（已驗證無）與 `+ +` / `- -` 相鄰運算（以空白守衛保留）。
@@ -135,7 +136,22 @@ async function checkDir(dir) {
     if (name.endsWith('.js')) execFileSync(process.execPath, ['--check', fileURLToPath(file)]);
   }
 }
+const stamp = await contentStamp();
+async function stampDir(dir) {
+  for (const name of await readdir(dir)) {
+    const file = new URL(name, dir + '/');
+    if ((await stat(file)).isDirectory()) {
+      await stampDir(file);
+      continue;
+    }
+    if (!name.endsWith('.js')) continue;
+    await writeFile(file, stampModuleSpecifiers(await readFile(file, 'utf8'), stamp));
+  }
+}
+await stampDir(new URL('./dist/src/', import.meta.url));
+const distIndex = new URL('./dist/index.html', import.meta.url);
+await writeFile(distIndex, stampHtmlAssets(await readFile(distIndex, 'utf8'), stamp));
 await checkDir(new URL('./dist/src/', import.meta.url));
 console.log(
-  `Built SkyFire-MVP: no runtime dependencies, src ${((1 - min / raw) * 100).toFixed(1)}% smaller after minify.`
+  `Built SkyFire-MVP: no runtime dependencies, src ${((1 - min / raw) * 100).toFixed(1)}% smaller after minify, cache stamp ${stamp}.`
 );

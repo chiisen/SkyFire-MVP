@@ -1,6 +1,6 @@
 // 自動駕駛全戰役模擬：固定步長、真走位、真輸出、真炸彈，不開無敵不直接扣血。
 // 目的為流程與平衡檢查（600 秒下限、五首領擊破、關卡推進），非真人難度證明。
-// 標準模式＋堡壘 B-03（厚甲多彈），續戰上限遵守 3 次。
+// 標準模式＋銅 B-03（厚甲多彈），續戰上限遵守 3 次。
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { Game } from '../src/engine.js';

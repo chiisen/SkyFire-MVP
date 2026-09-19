@@ -22,7 +22,7 @@ export function chooseShip(S, id) {
   const ship = SHIPS[id];
   for (const button of $('ship-picker').children)
     button.setAttribute('aria-pressed', Number(button.dataset.ship) === id);
-  $('ship-code').textContent = `${ship.code} / ${['黃金', '白銀', '赤銅'][id]}`;
+  $('ship-code').textContent = `${ship.code} / ${ship.name}`;
   $('ship-description').textContent = ship.description;
   $('ship-stats').innerHTML =
     `<span>機體 <b>${ship.health}</b></span><span>護盾 <b>${ship.shield}</b></span><span>速度 <b>${ship.speed}</b></span><span>炸彈 <b>${ship.bombStock}</b></span>`;

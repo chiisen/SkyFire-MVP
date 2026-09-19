@@ -16,7 +16,7 @@
 
 ## 3. 常用指令
 
-- 本機遊玩：`python3 -m http.server 4173` → `http://localhost:4173`
+- 本機遊玩：`npm start` → `http://localhost:4173`（模組快取破壞；勿用會快取舊 JS 的靜態伺服器）
 - 測試：`npm test`｜建置：`npm run build`（輸出 `dist/`）
 - 檢查：`git diff --check`
 

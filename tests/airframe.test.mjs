@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { AIRFRAMES } from '../src/airframes/ships.js';
 import { M } from '../src/airframes/math.js';
-import { camera, paintMesh } from '../src/airframes/project.js';
+import { camera, drawAirframe, paintMesh } from '../src/airframes/project.js';
 import { SHIPS } from '../src/data.js';
 
 function paintRatio(model, mat) {
@@ -45,6 +45,50 @@ describe('戰機金銀銅塗裝', () => {
     );
     assert.ok(bronze[0] > 130 && bronze[1] < 115 && bronze[2] < 95 && bronze[0] - bronze[2] > 50, `銅 ${bronze}`);
     assert.ok(dist(gold, silver) > 40 && dist(gold, bronze) > 25 && dist(silver, bronze) > 40);
+  });
+});
+
+describe('機身電能', () => {
+  it('展示模式會描電弧', () => {
+    let strokes = 0;
+    const gradient = { addColorStop() {} };
+    const c = {
+      lineJoin: '',
+      lineCap: '',
+      lineWidth: 0,
+      globalAlpha: 1,
+      save() {},
+      restore() {},
+      translate() {},
+      scale() {},
+      beginPath() {},
+      moveTo() {},
+      lineTo() {},
+      closePath() {},
+      ellipse() {},
+      arc() {},
+      fill() {},
+      stroke() {
+        strokes++;
+      },
+      createLinearGradient() {
+        return gradient;
+      },
+      set fillStyle(v) {
+        this._f = v;
+      },
+      get fillStyle() {
+        return this._f;
+      },
+      set strokeStyle(v) {
+        this._s = v;
+      },
+      get strokeStyle() {
+        return this._s;
+      },
+    };
+    drawAirframe(c, 240, 240, 0, 1, 1.4, 0, { showcase: true });
+    assert.ok(strokes >= 2, `strokes ${strokes}`);
   });
 });
 

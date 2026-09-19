@@ -1,0 +1,47 @@
+[
+  {
+    "id": 0,
+    "name": "金",
+    "code": "F-01",
+    "role": "高速均衡型",
+    "description": "靈活轉向，均衡火力。適合穿梭彈幕、追逐補給。",
+    "color": "#ffc428",
+    "energyColor": "#ffe08a",
+    "health": 5,
+    "shield": 2,
+    "speed": 330,
+    "damage": 1,
+    "fireRate": 1,
+    "bombStock": 2
+  },
+  {
+    "id": 1,
+    "name": "銀",
+    "code": "P-02",
+    "role": "高能突擊型",
+    "description": "火力更強，裝甲較輕。把握攻擊窗口擊穿機群。",
+    "color": "#e8eef4",
+    "energyColor": "#9befff",
+    "health": 4,
+    "shield": 2,
+    "speed": 300,
+    "damage": 1.08,
+    "fireRate": 1,
+    "bombStock": 2
+  },
+  {
+    "id": 2,
+    "name": "銅",
+    "code": "B-03",
+    "role": "重裝生存型",
+    "description": "厚重裝甲，額外炸彈。用持久生存換取反擊機會。",
+    "color": "#d45a1e",
+    "energyColor": "#ffb07a",
+    "health": 7,
+    "shield": 3,
+    "speed": 260,
+    "damage": 0.9,
+    "fireRate": 0.95,
+    "bombStock": 3
+  }
+]

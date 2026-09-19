@@ -1,0 +1,34 @@
+{
+  "pulse": {
+    "name": "風暴脈衝",
+    "rarity": "藍色",
+    "color": "#69b9ff",
+    "label": "P",
+    "description": "扇形散射覆蓋寬闊空域，適合清理分散敵機。",
+    "weight": 0.48
+  },
+  "laser": {
+    "name": "翡翠光束",
+    "rarity": "綠色",
+    "color": "#7af0b8",
+    "label": "L",
+    "description": "高能雷射穿透前後目標，適合縱向機群與首領。",
+    "weight": 0.28
+  },
+  "arc": {
+    "name": "紫電追獵",
+    "rarity": "紫色",
+    "color": "#c795ff",
+    "label": "A",
+    "description": "追蹤彈轉向尋找敵機，讓閃避時也能持續輸出。",
+    "weight": 0.18
+  },
+  "nova": {
+    "name": "日冕新星",
+    "rarity": "金色",
+    "color": "#ffd36b",
+    "label": "N",
+    "description": "爆裂彈製造範圍傷害，適合擊破密集陣列。",
+    "weight": 0.06
+  }
+}

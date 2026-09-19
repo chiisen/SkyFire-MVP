@@ -27,9 +27,25 @@ describe('建置產物', () => {
   });
 
   it('產物存在且佈局鏡像', () => {
-    for (const file of ['dist/index.html', 'dist/icon.svg', 'dist/src/engine.js', 'dist/src/style.css']) {
+    for (const file of [
+      'dist/index.html',
+      'dist/icon.svg',
+      'dist/src/engine.js',
+      'dist/src/style.css',
+      'dist/src/data/ships.json',
+      'dist/src/data/weapons.json',
+      'dist/src/data/stages.json',
+      'dist/src/data/upgrades.json',
+      'dist/src/data/constants.json',
+    ]) {
       assert.ok(existsSync(new URL(file, ROOT)), `${file} 應存在`);
     }
+    const dataJs = readFileSync(new URL('dist/src/data.js', ROOT), 'utf8');
+    assert.match(dataJs, /ships\.json\?v=[0-9a-f]+/);
+    assert.match(dataJs, /weapons\.json\?v=[0-9a-f]+/);
+    assert.match(dataJs, /stages\.json\?v=[0-9a-f]+/);
+    assert.match(dataJs, /upgrades\.json\?v=[0-9a-f]+/);
+    assert.match(dataJs, /constants\.json\?v=[0-9a-f]+/);
   });
 
   it('minify 後更小（建置內已過 node --check）', () => {

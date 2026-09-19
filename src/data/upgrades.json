@@ -1,0 +1,10 @@
+[
+  { "id": "damage", "name": "高能彈頭", "description": "武器傷害 +15%。", "tag": "火力" },
+  { "id": "fireRate", "name": "超頻砲組", "description": "射速 +12%。", "tag": "火力" },
+  { "id": "hull", "name": "複合裝甲", "description": "機體上限 +1，並修復 2 點機體。", "tag": "生存" },
+  { "id": "shield", "name": "相位護盾", "description": "護盾上限 +1，並補滿護盾。", "tag": "生存" },
+  { "id": "magnet", "name": "牽引力場", "description": "補給吸附範圍 +32 像素。", "tag": "補給" },
+  { "id": "wingmen", "name": "僚機編隊", "description": "增加 1 架協同射擊的僚機，最多 2 架。", "tag": "支援" },
+  { "id": "bomb", "name": "應急軍備", "description": "補充 2 枚炸彈，庫存最多 5 枚。", "tag": "支援" },
+  { "id": "reactor", "name": "聚能反應爐", "description": "擦彈與擊殺獲得的充能 +30%。", "tag": "充能" }
+]

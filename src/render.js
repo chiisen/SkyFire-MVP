@@ -68,7 +68,7 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
       2.65,
       reducedMotion ? 0 : idleTime,
       0,
-      { showcase: true }
+      { showcase: true, reducedMotion }
     );
     c.restore();
     return;
@@ -105,10 +105,12 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
         player.shipId,
         0.35,
         reducedMotion ? 0 : t,
-        player.bank || 0
+        player.bank || 0,
+        { reducedMotion }
       );
     drawShip(c, player.x, player.y, player.shipId, 1, reducedMotion ? 0 : t, player.bank || 0, {
       boost: player.overdriveTime > 0,
+      reducedMotion,
     });
     c.globalAlpha = 1;
     // 可見中心是小受擊判定，而非機翼剪影。

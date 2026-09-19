@@ -1,0 +1,52 @@
+[
+  {
+    "name": "晨曦海港",
+    "enName": "DAWN HARBOR",
+    "bossName": "裂翼巡航艦",
+    "color": "#68ced9",
+    "description": "從深青色海港升空，在斥候編隊與扇形彈幕中打開航路。",
+    "bossHp": 6000,
+    "theme": "coast",
+    "tip": "機身中央的小光點才是受擊核心。自動開火時專注移動。"
+  },
+  {
+    "name": "翡翠峽谷",
+    "enName": "EMERALD CANYON",
+    "bossName": "峽谷織網者",
+    "color": "#87e4a7",
+    "description": "穿越層疊綠谷，辨認會橫向漂移的電弧彈。",
+    "bossHp": 10500,
+    "theme": "canyon",
+    "tip": "漂移彈會改變橫向位置。保留側向空間，避免貼死邊緣。"
+  },
+  {
+    "name": "冰川陣列",
+    "enName": "FROST ARRAY",
+    "bossName": "寒霜裁決者",
+    "color": "#a7e6ff",
+    "description": "掠過冰藍色陣列，在預警線亮起時躲開雷射封鎖。",
+    "bossHp": 16500,
+    "theme": "ice",
+    "tip": "雷射先預警再發射；預警期間離開射線，別等光束點亮。"
+  },
+  {
+    "name": "熔核工廠",
+    "enName": "MOLTEN FOUNDRY",
+    "bossName": "熔核雙生體",
+    "color": "#ff946b",
+    "description": "衝入橘紅色熔核工廠，在加速彈陣與交錯漂移彈之間尋路。",
+    "bossHp": 22000,
+    "theme": "foundry",
+    "tip": "本關首領的雷射會掃動。預警後繼續觀察光束方向，保留側移空間。"
+  },
+  {
+    "name": "天穹核心",
+    "enName": "SKY REACTOR",
+    "bossName": "天穹·終焉引擎",
+    "color": "#ffd277",
+    "description": "駛入暗金色深空核心，應對雷射、漂移彈與多階段首領的合圍。",
+    "bossHp": 28000,
+    "theme": "core",
+    "tip": "炸彈可以解圍。留意充能與護盾，在安全窗口集中輸出。"
+  }
+]

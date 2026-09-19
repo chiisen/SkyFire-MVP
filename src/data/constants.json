@@ -1,0 +1,7 @@
+{
+  "WIDTH": 480,
+  "HEIGHT": 800,
+  "STAGE_SECONDS": 120,
+  "BOSS_AT": 88,
+  "DROP_TTL": 10
+}

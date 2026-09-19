@@ -1,6 +1,7 @@
 import { TAU, clamp, unit, dot } from './math.js';
 import { AIRFRAMES } from './ships.js';
 import { exhaust } from './parts.js';
+import { energy } from './energy.js';
 
 export const LIGHT = unit([-0.55, -0.65, 1]),
   HALF = unit([LIGHT[0], LIGHT[1], LIGHT[2] + 1]);
@@ -103,7 +104,7 @@ export function drawAirframe(
   scale = 1,
   time = 0,
   bank = 0,
-  { showcase = false, boost = false } = {}
+  { showcase = false, boost = false, reducedMotion = false } = {}
 ) {
   const model = AIRFRAMES[clamp(shipId | 0, 0, 2)],
     transform = camera(bank, showcase, time);
@@ -123,5 +124,6 @@ export function drawAirframe(
   const cached = showcase ? null : sprite(model, bank);
   if (cached) c.drawImage(cached, -72, -96, 144, 176);
   else paintMesh(c, model, transform);
+  energy(c, transform, time, clamp(shipId | 0, 0, 2), { boost, reducedMotion });
   c.restore();
 }
