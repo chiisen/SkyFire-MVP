@@ -1,5 +1,6 @@
 import { SHIPS, STAGES } from '../data.js';
 import { $, storage, arrow, formatScore, formatTime } from './state.js';
+import { MODE_CAMPAIGN, recordOf, submitRun } from './records.js';
 import { updateHud } from './hud.js';
 
 // 清空鍵盤與觸控輸入狀態。
@@ -83,6 +84,7 @@ export function toHangar(S) {
   $('stage-announcement').hidden = true;
   $('toast').hidden = true;
   chooseShip(S, S.selectedShip);
+  refreshRecord(S);
   syncMode(S);
   updateHud(S, true);
   $('start-button').focus({ preventScroll: true });
@@ -144,6 +146,26 @@ export function syncMode(S) {
     $('overlay-content').append(choices);
   } else {
     const won = S.game.mode === 'victory';
+    let newBest = false;
+    if (!S.game.practice) {
+      const result = submitRun(S.records, {
+        mode: MODE_CAMPAIGN,
+        difficulty: S.game.difficulty,
+        score: S.game.score,
+        time: S.game.time,
+        kills: S.game.kills,
+        grazes: S.game.grazes,
+        shipId: S.game.player.shipId,
+        won,
+        at: Date.now(),
+      });
+      if (result.records !== S.records) {
+        S.records = result.records;
+        storage.set('records', S.records);
+      }
+      newBest = result.isBest;
+      refreshRecord(S);
+    }
     kicker.textContent = S.game.practice ? 'TRAINING REPORT' : won ? 'MISSION ACCOMPLISHED' : 'SIGNAL LOST';
     title.textContent = won ? (S.game.practice ? '演練完成。' : '天穹，重歸黎明。') : '這不是最後一次出擊。';
     desc.textContent = won
@@ -152,12 +174,9 @@ export function syncMode(S) {
         : `五大空域已全部解放。${S.game.continues ? `本次續戰 ${S.game.continues} 次。` : '一命航程，一路到底。'}`
       : `抵達第 ${S.game.stageIndex + 1} 空域 · ${STAGES[S.game.stageIndex].name}。${S.game.continues < 3 ? '可續戰重開當前關，保留強化，分數扣除 35%。' : '本局續戰次數已用完，返回機庫再挑戰。'}`;
     $('overlay-content').innerHTML =
-      `<div class="result-grid"><div><small>作戰得分</small><strong>${formatScore(S.game.score)}</strong></div><div><small>有效戰鬥時間</small><strong>${formatTime(S.game.time)}</strong></div><div><small>擊落敵機</small><strong>${S.game.kills}</strong></div><div><small>擦彈次數</small><strong>${S.game.grazes}</strong></div></div>`;
-    if (!S.game.practice && S.game.score > S.best) {
-      S.best = S.game.score;
-      storage.set('best', S.best);
-      $('best-score').textContent = formatScore(S.best);
-    }
+      `<div class="result-grid"><div><small>作戰得分</small><strong>${formatScore(S.game.score)}</strong></div><div><small>有效戰鬥時間</small><strong>${formatTime(S.game.time)}</strong></div><div><small>擊落敵機</small><strong>${S.game.kills}</strong></div><div><small>擦彈次數</small><strong>${S.game.grazes}</strong></div></div>${
+        newBest ? '<p class="record-badge">NEW BEST · 本機最高分更新</p>' : ''
+      }`;
     if (!won && S.game.continues < 3)
       actions.append(
         button(`繼續作戰 <small>${3 - S.game.continues} 次機會</small>${arrow}`, 'primary-button', () => {
@@ -211,6 +230,14 @@ export function processEvents(S) {
     if (event.type === 'pickup') toast(S, event.label);
   }
 }
+// 依目前選擇的難度更新機庫的本機紀錄顯示。
+export function refreshRecord(S) {
+  const rec = recordOf(S.records, MODE_CAMPAIGN, $('difficulty').value);
+  $('best-score').textContent = formatScore(rec?.score || 0);
+  $('best-detail').textContent = rec
+    ? `最快通關 ${rec.clearTime != null ? formatTime(rec.clearTime) : '--:--'} · 最高擦彈 ${rec.grazes}`
+    : '尚無紀錄 · 出擊後自動記錄';
+}
 // 繪製機庫靜態資訊（航線、戰機選單、最高分）。
 export function renderStatic(S) {
   $('mission-route').innerHTML = STAGES.map(
@@ -221,5 +248,5 @@ export function renderStatic(S) {
     (s) =>
       `<button class="ship-choice" data-ship="${s.id}" aria-pressed="${s.id === 0}" style="--ship-color:${s.color}"><small>${s.code}</small><strong>${s.name}</strong><span>${s.role}</span></button>`
   ).join('');
-  $('best-score').textContent = formatScore(S.best);
+  refreshRecord(S);
 }

@@ -1,5 +1,6 @@
 import { Game } from '../engine.js';
 import { Sound } from '../audio.js';
+import { normalizeRecords, migrateLegacyBest } from './records.js';
 
 // 依編號取得對應的 DOM 元素。
 export const $ = (id) => document.getElementById(id);
@@ -32,6 +33,12 @@ export const formatTime = (t) =>
     .padStart(2, '0')}`;
 export const arrow = '<svg aria-hidden="true"><use href="#i-arrow"/></svg>';
 
+// 載入本機紀錄；無紀錄表時由舊版單一最高分遷移。
+function loadRecords() {
+  const stored = storage.get('records', null);
+  return stored ? normalizeRecords(stored) : migrateLegacyBest(storage.get('best', 0));
+}
+
 // 建立整局共用的可變狀態容器（取代原本的模組頂層變數）。
 export function createState() {
   const game = new Game();
@@ -52,7 +59,7 @@ export function createState() {
     selectedShip: 0,
     focusMode: false,
     pointer: null,
-    best: Number(storage.get('best', 0)) || 0,
+    records: loadRecords(),
     lastMode: '',
     lastStage: -1,
     lastWeapon: '',
