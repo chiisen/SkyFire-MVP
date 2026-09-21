@@ -1,7 +1,18 @@
 // 戰役固定表由 JSON 經 data.js 再匯出；本檔走真實入口，不重抄數值。
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { SHIPS, WEAPONS, STAGES, UPGRADES, WIDTH, HEIGHT, STAGE_SECONDS, BOSS_AT, DROP_TTL } from '../src/data.js';
+import {
+  SHIPS,
+  WEAPONS,
+  STAGES,
+  UPGRADES,
+  WIDTH,
+  HEIGHT,
+  STAGE_SECONDS,
+  BOSS_AT,
+  DROP_TTL,
+  MAX_WEAPON_LEVEL,
+} from '../src/data.js';
 import ships from '../src/data/ships.json' with { type: 'json' };
 import weapons from '../src/data/weapons.json' with { type: 'json' };
 import stages from '../src/data/stages.json' with { type: 'json' };
@@ -19,6 +30,8 @@ describe('戰役 JSON 資料入口', () => {
     assert.equal(STAGE_SECONDS, constants.STAGE_SECONDS);
     assert.equal(BOSS_AT, constants.BOSS_AT);
     assert.equal(DROP_TTL, constants.DROP_TTL);
+    assert.equal(MAX_WEAPON_LEVEL, constants.MAX_WEAPON_LEVEL);
+    assert.equal(MAX_WEAPON_LEVEL, 10);
   });
 
   it('四種武器有權重、五關有首領血量與關卡秒數、升級卡有既有 id、三機可讀', () => {

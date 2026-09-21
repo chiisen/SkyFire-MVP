@@ -60,7 +60,8 @@ export function firePlayer() {
     lv = p.weaponLevel;
   this.fireTimer +=
     0.145 / (SHIPS[p.shipId].fireRate * (1 + this.upgrades.fireRate * 0.12) * (p.overdriveTime ? 1.4 : 1));
-  const n = 3 + 2 * Math.floor((lv - 1) / 2);
+  // 6 級後散射續增但設上限 9，避免 10 級彈幕過寬。
+  const n = Math.min(9, 3 + 2 * Math.floor((lv - 1) / 2));
   if (p.weapon === 'pulse') {
     for (let i = 0; i < n; i++)
       this.addShot(p.x, p.y - 25, -Math.PI / 2 + (i - (n - 1) / 2) * 0.095, 'pulse', 9 + lv * 1.5);

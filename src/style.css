@@ -792,7 +792,8 @@ canvas:focus:not(:focus-visible) {
   margin: 19px 0 29px;
 }
 .weapon-level i {
-  width: 23px;
+  flex: 1 1 0;
+  max-width: 23px;
   height: 3px;
   background: #60897833;
 }

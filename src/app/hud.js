@@ -1,4 +1,4 @@
-import { WEAPONS, STAGES, STAGE_SECONDS, DROP_TTL } from '../data.js';
+import { WEAPONS, STAGES, STAGE_SECONDS, DROP_TTL, MAX_WEAPON_LEVEL } from '../data.js';
 import { $, formatScore, formatTime } from './state.js';
 
 // 更新分數血量武器與關卡等介面資訊。
@@ -59,7 +59,7 @@ export function updateHud(S, force = false) {
       `${{ pulse: 'BLUE', laser: 'GREEN', arc: 'PURPLE', nova: 'GOLD' }[p.weapon]} / ${weapon.rarity}`;
     $('weapon-tier').style.color = weapon.color;
     $('weapon-level').innerHTML = Array.from(
-      { length: 5 },
+      { length: MAX_WEAPON_LEVEL },
       (_, i) =>
         `<i class="${i < p.weaponLevel ? 'active' : ''}" style="${i < p.weaponLevel ? `background:${weapon.color}` : ''}"></i>`
     ).join('');

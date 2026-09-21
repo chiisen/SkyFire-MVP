@@ -1,7 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Game, segmentDistance, chooseWeapon, seededRandom } from '../src/engine.js';
-import { WIDTH, HEIGHT, SHIPS, WEAPONS, STAGES, UPGRADES, STAGE_SECONDS, BOSS_AT, DROP_TTL } from '../src/data.js';
+import {
+  WIDTH,
+  HEIGHT,
+  SHIPS,
+  WEAPONS,
+  STAGES,
+  UPGRADES,
+  STAGE_SECONDS,
+  BOSS_AT,
+  DROP_TTL,
+  MAX_WEAPON_LEVEL,
+} from '../src/data.js';
 
 const FRAME = 1 / 60;
 const near = (actual, expected, tolerance = 1e-7) =>
@@ -235,18 +246,18 @@ test('擦彈只計一次且不傷玩家', () => {
   assert.ok(game.player.overdrive > 20);
 });
 
-test('四種武器可裝備、可升級、可記等級、上限 Lv.5', () => {
+test('四種武器可裝備、可升級、可記等級、上限 Lv.10', () => {
   const game = quietGame();
   for (const weapon of Object.keys(WEAPONS)) {
     pickup(game, 'weapon', weapon);
     assert.equal(game.player.weapon, weapon);
     assert.ok(game.player.weaponLevel >= 1);
   }
-  for (let i = 0; i < 8; i++) pickup(game, 'weapon', 'laser');
-  assert.equal(game.player.weaponLevel, 5);
+  for (let i = 0; i < 12; i++) pickup(game, 'weapon', 'laser');
+  assert.equal(game.player.weaponLevel, MAX_WEAPON_LEVEL);
   pickup(game, 'weapon', 'arc');
   pickup(game, 'weapon', 'laser');
-  assert.equal(game.player.weaponLevel, 5);
+  assert.equal(game.player.weaponLevel, MAX_WEAPON_LEVEL);
   game.player.health = 1;
   pickup(game, 'repair');
   assert.equal(game.player.health, 3);
@@ -274,6 +285,15 @@ test('四種武器彈道各異：散射、穿透、追蹤、爆裂', () => {
     if (weapon === 'arc') assert.ok(game.shots.every((shot) => shot.homing > 0));
     if (weapon === 'nova') assert.ok(game.shots.some((shot) => shot.blast > 0));
   }
+});
+
+test('高階脈衝彈數設上限，滿級不超過 9 發', () => {
+  const game = quietGame();
+  game.player.weapon = 'pulse';
+  game.player.weaponLevel = MAX_WEAPON_LEVEL;
+  game.shots = [];
+  game.firePlayer();
+  assert.equal(game.shots.length, 9);
 });
 
 test('武器掉落有機率，運輸機與連敗保底會補給', () => {

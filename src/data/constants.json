@@ -3,5 +3,6 @@
   "HEIGHT": 800,
   "STAGE_SECONDS": 120,
   "BOSS_AT": 88,
-  "DROP_TTL": 10
+  "DROP_TTL": 10,
+  "MAX_WEAPON_LEVEL": 10
 }

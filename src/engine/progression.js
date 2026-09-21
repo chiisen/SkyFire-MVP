@@ -1,4 +1,4 @@
-import { WIDTH, HEIGHT, WEAPONS, STAGES, UPGRADES, DROP_TTL } from '../data.js';
+import { WIDTH, HEIGHT, WEAPONS, STAGES, UPGRADES, DROP_TTL, MAX_WEAPON_LEVEL } from '../data.js';
 import { clamp, compact, dist2, chooseWeapon, pushCapped, TAU } from './utils.js';
 
 export function continueRun() {
@@ -122,7 +122,7 @@ export function collectDrop(drop) {
   let label;
   if (drop.kind === 'weapon') {
     p.weapon = drop.weapon;
-    p.levels[drop.weapon] = Math.min(5, p.levels[drop.weapon] + 1);
+    p.levels[drop.weapon] = Math.min(MAX_WEAPON_LEVEL, p.levels[drop.weapon] + 1);
     p.weaponLevel = p.levels[drop.weapon];
     label = `${WEAPONS[drop.weapon].name} Lv.${p.weaponLevel}`;
     this.addCharge(5);
