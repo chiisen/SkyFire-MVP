@@ -107,7 +107,7 @@ export function start({ shipId = 0, difficulty = 'normal', practiceStage = null 
     maxShield: ship.shield,
     bombs: ship.bombStock,
   };
-  if (ship.id === 1) {
+  if ((ship.baseId ?? ship.id) === 1) {
     this.player.weapon = 'laser';
     this.player.levels.laser = 1;
   }

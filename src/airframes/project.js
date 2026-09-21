@@ -106,7 +106,7 @@ export function drawAirframe(
   bank = 0,
   { showcase = false, boost = false, reducedMotion = false } = {}
 ) {
-  const model = AIRFRAMES[clamp(shipId | 0, 0, 2)],
+  const model = AIRFRAMES[clamp(shipId | 0, 0, AIRFRAMES.length - 1)],
     transform = camera(bank, showcase, time);
   c.save();
   c.translate(x, y);
@@ -124,6 +124,6 @@ export function drawAirframe(
   const cached = showcase ? null : sprite(model, bank);
   if (cached) c.drawImage(cached, -72, -96, 144, 176);
   else paintMesh(c, model, transform);
-  energy(c, transform, time, clamp(shipId | 0, 0, 2), { boost, reducedMotion });
+  energy(c, transform, time, clamp(shipId | 0, 0, AIRFRAMES.length - 1), { boost, reducedMotion });
   c.restore();
 }

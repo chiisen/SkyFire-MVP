@@ -38,7 +38,7 @@ describe('戰役 JSON 資料入口', () => {
     for (const id of ['damage', 'fireRate', 'hull', 'shield', 'magnet', 'wingmen', 'bomb', 'reactor']) {
       assert.ok(ids.includes(id), `缺少升級 ${id}`);
     }
-    assert.equal(SHIPS.length, 3);
+    assert.equal(SHIPS.length, 6);
     assert.ok(SHIPS.every((s) => typeof s.health === 'number' && typeof s.speed === 'number'));
   });
 });

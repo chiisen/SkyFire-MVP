@@ -77,7 +77,7 @@ test('戰役配置：五關各 120 秒、四種武器有權重', () => {
 });
 
 test('三種起始戰機的耐久、速度與武器確實不同', () => {
-  const games = SHIPS.map((ship) => quietGame({ shipId: ship.id }));
+  const games = SHIPS.slice(0, 3).map((ship) => quietGame({ shipId: ship.id }));
   assert.deepEqual(
     games.map((game) => [game.player.health, game.player.shield, game.player.bombs]),
     [
@@ -96,6 +96,17 @@ test('三種起始戰機的耐久、速度與武器確實不同', () => {
   near(games[0].shots[0].damage, 100);
   near(games[1].shots[0].damage, 108);
   near(games[2].shots[0].damage, 90);
+});
+
+test('暗色戰機沿用對應正常戰機的戰鬥數值', () => {
+  for (const id of [3, 4, 5]) {
+    const dark = quietGame({ shipId: id });
+    const normal = quietGame({ shipId: SHIPS[id].baseId });
+    assert.deepEqual(
+      [dark.player.health, dark.player.shield, dark.player.bombs, dark.player.weapon],
+      [normal.player.health, normal.player.shield, normal.player.bombs, normal.player.weapon]
+    );
+  }
 });
 
 test('鍵盤與觸控移動皆把受擊核心限制在可玩區內', () => {

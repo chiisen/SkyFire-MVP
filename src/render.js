@@ -18,7 +18,7 @@ export function drawFrame(c, game, { idleTime = 0, reducedMotion = false } = {})
   c.clip();
   background(c, stage, reducedMotion ? 0 : idle ? idleTime : t);
   if (idle) {
-    const livery = SHIPS[clamp(game.player?.shipId | 0, 0, 2)].color;
+    const livery = SHIPS[clamp(game.player?.shipId | 0, 0, SHIPS.length - 1)].color;
     c.save();
     c.translate(240, 230);
     c.fillStyle = `${livery}55`;

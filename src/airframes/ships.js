@@ -16,8 +16,9 @@ import {
 // 依機體編號組裝三款戰機網格，並回傳模型資料。
 export function makeAirframe(id) {
   const model = { faces: [], engines: [], id };
-  const paint = [M.gold, M.chrome, M.bronze][id];
-  if (id === 0) {
+  const baseId = id % 3;
+  const paint = (id < 3 ? [M.gold, M.chrome, M.bronze] : [M.darkGold, M.darkChrome, M.darkBronze])[baseId];
+  if (baseId === 0) {
     // 金色攔截機：後掠翼、長針形機頭與分離式引擎艙。
     mirrored(
       model,
@@ -136,7 +137,7 @@ export function makeAirframe(id) {
       M.white
     );
     canopy(model);
-  } else if (id === 1) {
+  } else if (baseId === 1) {
     // 銀色突擊機：前掠翼與一對長加速軌。
     mirrored(
       model,
@@ -331,8 +332,8 @@ export function makeAirframe(id) {
     canopy(model);
   }
   for (const s of [-1, 1]) {
-    const x = s * (id === 2 ? 54 : id === 1 ? 48 : 51),
-      y = id === 1 ? -30 : 18;
+    const x = s * (baseId === 2 ? 54 : baseId === 1 ? 48 : 51),
+      y = baseId === 1 ? -30 : 18;
     rect(model, x - 1, y, 2, 3, 5.4, s < 0 ? M.hot : M.cyan);
   }
   stainMetal(model, paint);
@@ -357,4 +358,4 @@ function mixMat(base, paint, t) {
     base.shine
   );
 }
-export const AIRFRAMES = [0, 1, 2].map(makeAirframe);
+export const AIRFRAMES = [0, 1, 2, 3, 4, 5].map(makeAirframe);

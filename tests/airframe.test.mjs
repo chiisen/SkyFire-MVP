@@ -11,6 +11,12 @@ function paintRatio(model, mat) {
 }
 
 describe('戰機金銀銅塗裝', () => {
+  it('提供正常與暗色六種可選戰機', () => {
+    assert.equal(SHIPS.length, 6);
+    assert.deepEqual(SHIPS.slice(3).map((ship) => ship.baseId), [0, 1, 2]);
+    assert.ok(SHIPS[3].color !== SHIPS[0].color && SHIPS[4].color !== SHIPS[1].color && SHIPS[5].color !== SHIPS[2].color);
+  });
+
   it('材質為高彩度金、鉻銀、銅', () => {
     const [g, s, b] = [M.gold, M.chrome, M.bronze];
     assert.ok(g.rgb[0] > 210 && g.rgb[1] > 150 && g.rgb[1] < g.rgb[0] - 20);
@@ -19,7 +25,7 @@ describe('戰機金銀銅塗裝', () => {
   });
 
   it('三機主色面佔比超過四成', () => {
-    const livery = [M.gold, M.chrome, M.bronze];
+    const livery = [M.gold, M.chrome, M.bronze, M.darkGold, M.darkChrome, M.darkBronze];
     for (const [i, model] of AIRFRAMES.entries()) {
       const ratio = paintRatio(model, livery[i]);
       assert.ok(ratio > 0.4, `ship ${i} 主色佔比 ${ratio}`);
@@ -45,6 +51,16 @@ describe('戰機金銀銅塗裝', () => {
     );
     assert.ok(bronze[0] > 130 && bronze[1] < 115 && bronze[2] < 95 && bronze[0] - bronze[2] > 50, `銅 ${bronze}`);
     assert.ok(dist(gold, silver) > 40 && dist(gold, bronze) > 25 && dist(silver, bronze) > 40);
+  });
+
+  it('暗色塗裝比對應正常色更暗但仍保留辨識度', () => {
+    const avgs = [3, 4, 5].map((id) => hangarAverage(AIRFRAMES[id]));
+    const normal = [0, 1, 2].map((id) => hangarAverage(AIRFRAMES[id]));
+    for (let i = 0; i < 3; i++) {
+      assert.ok(luminance(avgs[i]) < luminance(normal[i]) - 18, `暗色 ${i} 未明顯變暗`);
+      assert.ok(luminance(avgs[i]) > 45, `暗色 ${i} 細節過暗`);
+      assert.ok(dist(avgs[i], normal[i]) > 20, `暗色 ${i} 與正常色差異不足`);
+    }
   });
 });
 
@@ -134,4 +150,8 @@ function hangarAverage(model) {
 
 function dist(a, b) {
   return Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
+
+function luminance([r, g, b]) {
+  return r * 0.2126 + g * 0.7152 + b * 0.0722;
 }

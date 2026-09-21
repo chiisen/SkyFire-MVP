@@ -43,5 +43,53 @@
     "damage": 0.9,
     "fireRate": 0.95,
     "bombStock": 3
+  },
+  {
+    "id": 3,
+    "baseId": 0,
+    "name": "暗金",
+    "code": "F-01D",
+    "role": "高速均衡型",
+    "description": "低調暗金塗裝，保留靈活轉向與均衡火力。",
+    "color": "#b3841f",
+    "energyColor": "#e0a94d",
+    "health": 5,
+    "shield": 2,
+    "speed": 330,
+    "damage": 1,
+    "fireRate": 1,
+    "bombStock": 2
+  },
+  {
+    "id": 4,
+    "baseId": 1,
+    "name": "暗銀",
+    "code": "P-02D",
+    "role": "高能突擊型",
+    "description": "低調暗銀塗裝，保留高能突擊性能。",
+    "color": "#9da8b2",
+    "energyColor": "#78c7d8",
+    "health": 4,
+    "shield": 2,
+    "speed": 300,
+    "damage": 1.08,
+    "fireRate": 1,
+    "bombStock": 2
+  },
+  {
+    "id": 5,
+    "baseId": 2,
+    "name": "暗銅",
+    "code": "B-03D",
+    "role": "重裝生存型",
+    "description": "低調暗銅塗裝，保留厚重裝甲與額外炸彈。",
+    "color": "#8f3f1f",
+    "energyColor": "#d77c52",
+    "health": 7,
+    "shield": 3,
+    "speed": 260,
+    "damage": 0.9,
+    "fireRate": 0.95,
+    "bombStock": 3
   }
 ]
