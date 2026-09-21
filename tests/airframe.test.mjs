@@ -13,8 +13,13 @@ function paintRatio(model, mat) {
 describe('戰機金銀銅塗裝', () => {
   it('提供正常與暗色六種可選戰機', () => {
     assert.equal(SHIPS.length, 6);
-    assert.deepEqual(SHIPS.slice(3).map((ship) => ship.baseId), [0, 1, 2]);
-    assert.ok(SHIPS[3].color !== SHIPS[0].color && SHIPS[4].color !== SHIPS[1].color && SHIPS[5].color !== SHIPS[2].color);
+    assert.deepEqual(
+      SHIPS.slice(3).map((ship) => ship.baseId),
+      [0, 1, 2]
+    );
+    assert.ok(
+      SHIPS[3].color !== SHIPS[0].color && SHIPS[4].color !== SHIPS[1].color && SHIPS[5].color !== SHIPS[2].color
+    );
   });
 
   it('材質為高彩度金、鉻銀、銅', () => {
@@ -60,6 +65,19 @@ describe('戰機金銀銅塗裝', () => {
       assert.ok(luminance(avgs[i]) < luminance(normal[i]) - 18, `暗色 ${i} 未明顯變暗`);
       assert.ok(luminance(avgs[i]) > 45, `暗色 ${i} 細節過暗`);
       assert.ok(dist(avgs[i], normal[i]) > 20, `暗色 ${i} 與正常色差異不足`);
+    }
+  });
+
+  it('暗色版加專屬識別件且帶亮色點綴', () => {
+    const accents = [M.accentGold, M.accentCyan, M.accentCopper];
+    for (let i = 0; i < 3; i++) {
+      const normal = AIRFRAMES[i],
+        dark = AIRFRAMES[i + 3];
+      assert.ok(dark.faces.length > normal.faces.length, `暗色 ${i} 未加識別件`);
+      assert.ok(
+        dark.faces.some((f) => f.mat === accents[i]),
+        `暗色 ${i} 缺亮色點綴`
+      );
     }
   });
 });

@@ -5,6 +5,7 @@ import {
   cannon,
   engine,
   fin,
+  flat,
   fuselage,
   markings,
   mirrored,
@@ -17,7 +18,9 @@ import {
 export function makeAirframe(id) {
   const model = { faces: [], engines: [], id };
   const baseId = id % 3;
-  const paint = (id < 3 ? [M.gold, M.chrome, M.bronze] : [M.darkGold, M.darkChrome, M.darkBronze])[baseId];
+  const dark = id >= 3;
+  const paint = (dark ? [M.darkGold, M.darkChrome, M.darkBronze] : [M.gold, M.chrome, M.bronze])[baseId];
+  const accent = [M.accentGold, M.accentCyan, M.accentCopper][baseId];
   if (baseId === 0) {
     // 金色攔截機：後掠翼、長針形機頭與分離式引擎艙。
     mirrored(
@@ -137,6 +140,36 @@ export function makeAirframe(id) {
       M.white
     );
     canopy(model);
+    if (dark) {
+      // 暗金攔截機：翼端外拓小翼與垂直鰭，剪影比原版更寬更利。
+      mirrored(
+        model,
+        [
+          [50, 8],
+          [66, 19],
+          [63, 30],
+          [47, 23],
+        ],
+        2.5,
+        3.7,
+        paint,
+        0.1
+      );
+      for (const s of [-1, 1]) {
+        fin(model, s * 61, 16, 14, paint, s * 0.22);
+        flat(
+          model,
+          [
+            [s * 15, -15],
+            [s * 49, 9],
+            [s * 47, 13],
+            [s * 13, -11],
+          ],
+          3.25,
+          accent
+        );
+      }
+    }
   } else if (baseId === 1) {
     // 銀色突擊機：前掠翼與一對長加速軌。
     mirrored(
@@ -234,6 +267,36 @@ export function makeAirframe(id) {
       paint
     );
     canopy(model, true);
+    if (dark) {
+      // 暗銀突擊機：機頭鴨翼與加長加速軌，前段輪廓與原版不同。
+      mirrored(
+        model,
+        [
+          [13, -34],
+          [31, -37],
+          [30, -26],
+          [14, -23],
+        ],
+        3.6,
+        5.3,
+        paint,
+        0.1
+      );
+      for (const s of [-1, 1]) {
+        rect(model, s * 14 - 1, -26, 2, 17, 9.66, accent);
+        flat(
+          model,
+          [
+            [s * 33, -30],
+            [s * 52, -41],
+            [s * 49, -37],
+            [s * 31, -26],
+          ],
+          5.45,
+          accent
+        );
+      }
+    }
   } else {
     // 銅色裝甲砲艇：寬肩、四門砲管與加大引擎。
     mirrored(
@@ -277,7 +340,7 @@ export function makeAirframe(id) {
     );
     for (const s of [-1, 1]) {
       engine(model, s * 22, 13, 10.5, paint);
-      for (const dx of [-2.1, 2.1]) cannon(model, s * 47 + dx, -4, M.steel, 29);
+      for (const dx of dark ? [-4.2, 0, 4.2] : [-2.1, 2.1]) cannon(model, s * 47 + dx, -4, M.steel, 29);
       fin(model, s * 18, 22, 22, paint, s * 0.16);
       markings(model, s, 40, -2, 7.1, 2);
       servicePanel(
@@ -330,6 +393,34 @@ export function makeAirframe(id) {
       paint
     );
     canopy(model);
+    if (dark) {
+      // 暗銅砲艇：外掛裝甲側裙與亮銅條，中段剪影更厚。
+      mirrored(
+        model,
+        [
+          [13, -19],
+          [21, -18],
+          [23, 11],
+          [13, 13],
+        ],
+        3.4,
+        7.2,
+        paint,
+        0.12
+      );
+      for (const s of [-1, 1])
+        flat(
+          model,
+          [
+            [s * 16, -25],
+            [s * 51, -5],
+            [s * 49, -1],
+            [s * 14, -21],
+          ],
+          4.65,
+          accent
+        );
+    }
   }
   for (const s of [-1, 1]) {
     const x = s * (baseId === 2 ? 54 : baseId === 1 ? 48 : 51),
