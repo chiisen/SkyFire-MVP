@@ -13,6 +13,7 @@ import {
   resetInput,
   focusCanvas,
   renderStatic,
+  refreshRecord,
 } from './screens.js';
 
 // 結束觸控拖曳並清除對應的指標狀態。
@@ -107,6 +108,7 @@ export function wireInput(S) {
     if (button) chooseShip(S, Number(button.dataset.ship));
   });
   $('start-button').addEventListener('click', () => start(S));
+  $('difficulty').addEventListener('change', () => refreshRecord(S));
   $('pause-button').addEventListener('click', () => pause(S));
   $('bomb-button').addEventListener('click', () => {
     S.game.bomb();
