@@ -6,7 +6,7 @@
 - 手機觸控與桌面鍵鼠皆可遊玩
 - 完整規格見 [SPEC.md](./SPEC.md)
 
-![demo](./images/demo.webp)
+![demo](./images/demo.png)
 
 ## 啟動遊戲
 
