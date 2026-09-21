@@ -13,9 +13,10 @@ const ENEMY_SPECS = {
 
 export function spawnEnemy(type, x, y = -35, extra = {}) {
   if (this.enemies.length >= 65) return null;
-  const [hp, r, w, speed] = ENEMY_SPECS[type] || ENEMY_SPECS.scout;
+  const [hp, r, w, speed] = ENEMY_SPECS[type] || ENEMY_SPECS.scout,
+    id = ++this.id;
   const e = {
-    id: ++this.id,
+    id,
     type,
     x,
     baseX: x,
@@ -33,6 +34,8 @@ export function spawnEnemy(type, x, y = -35, extra = {}) {
     stage: this.stageIndex,
     phase: 1,
     seed: this.rng() * TAU,
+    // 暖色禁區隨機色相（紅橙黃），由 id 乘質數跳散、不動亂數序列，確保與冷綠背景對比。
+    hue: ((id * 26) % 75) - 25,
     ...extra,
   };
   this.enemies.push(e);

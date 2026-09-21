@@ -96,6 +96,44 @@ export function plate(c, x, y, w, h, fill, edge, cut = 5) {
   );
 }
 
+// 將十六進位色旋轉指定色相角度並可放大飽和度，供敵人隨機配色；結果依參數快取。
+const hueCache = new Map();
+export function shiftHue(hex, deg, satScale = 1) {
+  const key = `${hex}|${Math.round(deg)}|${satScale}`;
+  const hit = hueCache.get(key);
+  if (hit) return hit;
+  const r = parseInt(hex.slice(1, 3), 16) / 255,
+    g = parseInt(hex.slice(3, 5), 16) / 255,
+    b = parseInt(hex.slice(5, 7), 16) / 255,
+    max = Math.max(r, g, b),
+    min = Math.min(r, g, b),
+    l = (max + min) / 2,
+    d = max - min;
+  let h = 0,
+    sat = 0;
+  if (d) {
+    sat = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    h = max === r ? ((g - b) / d + (g < b ? 6 : 0)) / 6 : max === g ? ((b - r) / d + 2) / 6 : ((r - g) / d + 4) / 6;
+  }
+  sat = Math.min(1, sat * satScale);
+  h = (h + deg / 360) % 1;
+  if (h < 0) h += 1;
+  const q = l < 0.5 ? l * (1 + sat) : l + sat - l * sat,
+    p = 2 * l - q,
+    to = (t) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    },
+    rgb = [to(h + 1 / 3), to(h), to(h - 1 / 3)].map((v) => Math.round(v * 255)),
+    out = `#${rgb.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+  hueCache.set(key, out);
+  return out;
+}
+
 // 繪製海面波紋與兩側艦島，營造第一關海上場景的縱向捲動。
 
 export { W, H, TAU, LOOT, PAL, clamp, hash, mod };

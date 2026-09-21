@@ -1,4 +1,4 @@
-import { TAU, clamp, poly, line, circle, plate } from './shared.js';
+import { TAU, clamp, poly, line, circle, plate, shiftHue } from './shared.js';
 
 // 尾焰 sprite 快取：漸層每敵每幀新建是雜兵群最大開銷，烘焙一次、每朵一次貼圖。
 // 實務只有一種規格（寬 2、高 -14、同色），閃爍以整張縱向縮放呈現，誤差不足 1px。
@@ -101,9 +101,12 @@ export function enemy(c, e, time) {
   c.save();
   c.translate(e.x, e.y);
   c.scale(s, Math.min(1.8, h / 42));
-  const lit = e.flash > 0,
-    edge = lit ? '#fff9e3' : '#dd8c70',
-    metal = lit ? '#e4bea3' : '#745c5d';
+  const hue = e.hue || 0,
+    // 放大飽和度讓低飽和的艦身底色也能明顯看出色相差異。
+    C = (hex) => shiftHue(hex, hue, 1.8),
+    lit = e.flash > 0,
+    edge = lit ? '#fff9e3' : C('#dd8c70'),
+    metal = lit ? '#e4bea3' : C('#745c5d');
   if (e.type === 'mine') {
     c.rotate(time * 0.6 + (e.age || 0));
     for (let i = 0; i < 6; i++) {
@@ -118,19 +121,19 @@ export function enemy(c, e, time) {
           [3, -16],
           [3, -7],
         ],
-        '#8f665d',
-        '#e1a382'
+        C('#8f665d'),
+        C('#e1a382')
       );
       c.restore();
     }
-    circle(c, 0, 0, 10, '#25283a', edge, 1.5);
-    circle(c, 0, 0, 4, '#ffbd82');
+    circle(c, 0, 0, 10, C('#25283a'), edge, 1.5);
+    circle(c, 0, 0, 4, C('#ffbd82'));
   } else if (e.type === 'carrier') {
-    plate(c, -22, -22, 44, 43, '#303344', edge, 6);
-    plate(c, -14, -17, 28, 33, metal, '#9b7670', 3);
+    plate(c, -22, -22, 44, 43, C('#303344'), edge, 6);
+    plate(c, -14, -17, 28, 33, metal, C('#9b7670'), 3);
     for (let s = -1; s <= 1; s += 2) {
-      plate(c, s * 19 - 5, -12, 10, 24, '#171f31', '#b08b7a', 2);
-      c.fillStyle = '#ffa779';
+      plate(c, s * 19 - 5, -12, 10, 24, C('#171f31'), C('#b08b7a'), 2);
+      c.fillStyle = C('#ffa779');
       c.fillRect(s * 19 - 2, 4, 4, 8);
     }
     poly(
@@ -142,9 +145,9 @@ export function enemy(c, e, time) {
         [6, -6],
         [8, 10],
       ],
-      '#bea298'
+      C('#bea298')
     );
-    circle(c, 0, 0, 3, '#ffe4c1');
+    circle(c, 0, 0, 3, C('#ffe4c1'));
   } else if (e.type === 'gunship' || e.type === 'laser') {
     const laser = e.type === 'laser';
     poly(
@@ -162,7 +165,7 @@ export function enemy(c, e, time) {
         [12, 8],
         [5, 24],
       ],
-      '#242d40',
+      C('#242d40'),
       edge
     );
     poly(
@@ -183,9 +186,9 @@ export function enemy(c, e, time) {
         [6, 15],
         [15, 4],
       ],
-      '#a08177'
+      C('#a08177')
     );
-    plate(c, -5, -12, 10, 30, laser ? '#bb716b' : '#a89083', '#e5b798', 2);
+    plate(c, -5, -12, 10, 30, C(laser ? '#bb716b' : '#a89083'), C('#e5b798'), 2);
     for (const s of [-1, 1]) {
       line(
         c,
@@ -193,12 +196,12 @@ export function enemy(c, e, time) {
           [s * 17, 0],
           [s * 17, 16],
         ],
-        '#c7afa1',
+        C('#c7afa1'),
         3
       );
-      circle(c, s * 17, 17, 2, laser ? '#ff796c' : '#ffc194');
+      circle(c, s * 17, 17, 2, C(laser ? '#ff796c' : '#ffc194'));
     }
-    circle(c, 0, 2, 3, laser ? '#ff7b82' : '#ffdbb2');
+    circle(c, 0, 2, 3, C(laser ? '#ff7b82' : '#ffdbb2'));
   } else {
     const interceptor = e.type === 'interceptor';
     poly(
@@ -215,7 +218,7 @@ export function enemy(c, e, time) {
         [21, 4],
         [8, 7],
       ],
-      '#283043',
+      C('#283043'),
       edge,
       0.8
     );
@@ -239,7 +242,7 @@ export function enemy(c, e, time) {
         [-17, 2],
         [-6, 8],
       ],
-      '#a58579'
+      C('#a58579')
     );
     poly(
       c,
@@ -249,7 +252,7 @@ export function enemy(c, e, time) {
         [17, 2],
         [6, 8],
       ],
-      '#826666'
+      C('#826666')
     );
     poly(
       c,
@@ -259,7 +262,7 @@ export function enemy(c, e, time) {
         [0, -4],
         [2, 3],
       ],
-      '#ffcf9e'
+      C('#ffcf9e')
     );
     if (interceptor) {
       line(
@@ -268,7 +271,7 @@ export function enemy(c, e, time) {
           [-13, 5],
           [-15, 16],
         ],
-        '#ffad81',
+        C('#ffad81'),
         2
       );
       line(
@@ -277,7 +280,7 @@ export function enemy(c, e, time) {
           [13, 5],
           [15, 16],
         ],
-        '#ffad81',
+        C('#ffad81'),
         2
       );
     }
