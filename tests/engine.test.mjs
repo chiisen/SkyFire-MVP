@@ -296,6 +296,23 @@ test('高階脈衝彈數設上限，滿級不超過 9 發', () => {
   assert.equal(game.shots.length, 9);
 });
 
+test('穿透／追蹤／爆裂彈數隨等級成長，不再卡在低上限', () => {
+  const game = quietGame();
+  const fire = (weapon, lv) => {
+    game.player.weapon = weapon;
+    game.player.weaponLevel = lv;
+    game.shots = [];
+    game.firePlayer();
+    return game.shots;
+  };
+  assert.equal(fire('laser', 1).length, 1);
+  assert.equal(fire('laser', MAX_WEAPON_LEVEL).length, 5);
+  assert.equal(fire('arc', 1).length, 2);
+  assert.equal(fire('arc', MAX_WEAPON_LEVEL).length, 6);
+  assert.equal(fire('nova', 1).filter((s) => s.type === 'nova').length, 1);
+  assert.equal(fire('nova', MAX_WEAPON_LEVEL).filter((s) => s.type === 'nova').length, 5);
+});
+
 test('武器掉落有機率，運輸機與連敗保底會補給', () => {
   const game = quietGame();
   // 高隨機值刻意同時落空普通武器與修復判定。

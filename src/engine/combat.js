@@ -57,28 +57,45 @@ export function addShot(x, y, angle, type, damage, speed = 660, r = 4, extra = {
 // 依當前武器與等級產生玩家彈幕並節流音效（無參數，回傳無）。
 export function firePlayer() {
   const p = this.player,
-    lv = p.weaponLevel;
+    lv = p.weaponLevel,
+    step = Math.floor((lv - 1) / 2);
   this.fireTimer +=
     0.145 / (SHIPS[p.shipId].fireRate * (1 + this.upgrades.fireRate * 0.12) * (p.overdriveTime ? 1.4 : 1));
-  // 6 級後散射續增但設上限 9，避免 10 級彈幕過寬。
-  const n = Math.min(9, 3 + 2 * Math.floor((lv - 1) / 2));
   if (p.weapon === 'pulse') {
+    // 每 2 級 +2 發，但上限 9 發，避免 10 級散射過寬。
+    const n = Math.min(9, 3 + 2 * step);
     for (let i = 0; i < n; i++)
       this.addShot(p.x, p.y - 25, -Math.PI / 2 + (i - (n - 1) / 2) * 0.095, 'pulse', 9 + lv * 1.5);
   } else if (p.weapon === 'laser') {
-    const count = lv >= 3 ? 2 : 1;
-    for (let i = 0; i < count; i++)
-      this.addShot(p.x + (count === 2 ? (i ? 7 : -7) : 0), p.y - 24, -Math.PI / 2, 'laser', 26 + lv * 3, 1000, 5, {
+    // 穿透：每 2 級 +1 道並排光束。
+    const n = 1 + step;
+    for (let i = 0; i < n; i++)
+      this.addShot(p.x + (i - (n - 1) / 2) * 12, p.y - 24, -Math.PI / 2, 'laser', 26 + lv * 3, 1000, 5, {
         pierce: 4,
       });
   } else if (p.weapon === 'arc') {
-    for (const sign of [-1, 1])
-      this.addShot(p.x + sign * 14, p.y - 18, -Math.PI / 2 + sign * 0.24, 'arc', 13 + lv * 2, 510, 5, {
-        homing: 4.8,
-      });
-    if (lv >= 3) this.addShot(p.x, p.y - 25, -Math.PI / 2, 'arc', 13 + lv * 2, 560, 5, { homing: 4 });
+    // 追蹤：起點 2 發，每 2 級 +1 發。
+    const n = 2 + step;
+    for (let i = 0; i < n; i++)
+      this.addShot(
+        p.x + (i - (n - 1) / 2) * 12,
+        p.y - 18,
+        -Math.PI / 2 + (i - (n - 1) / 2) * 0.16,
+        'arc',
+        13 + lv * 2,
+        510,
+        5,
+        {
+          homing: 4.8,
+        }
+      );
   } else {
-    this.addShot(p.x, p.y - 24, -Math.PI / 2, 'nova', 38 + lv * 5, 600, 8, { blast: 48 + lv * 4 });
+    // 爆裂：每 2 級 +1 發範圍彈，並維持兩側散射。
+    const n = 1 + step;
+    for (let i = 0; i < n; i++)
+      this.addShot(p.x, p.y - 24, -Math.PI / 2 + (i - (n - 1) / 2) * 0.13, 'nova', 38 + lv * 5, 600, 8, {
+        blast: 48 + lv * 4,
+      });
     for (const sign of [-1, 1]) this.addShot(p.x, p.y - 22, -Math.PI / 2 + sign * 0.15, 'pulse', 10 + lv * 2);
   }
   if (Math.floor(this.time * 5) !== this.lastShotSound) {
