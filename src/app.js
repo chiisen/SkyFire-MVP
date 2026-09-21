@@ -6,6 +6,7 @@ import { wireInput, updateSound, updateReduced } from './app/input.js';
 import { frame, resize } from './app/frame.js';
 
 export const S = createState();
+if (typeof window !== 'undefined') window.__SKYFIRE_DEBUG__ = S.game.diagnosticsApi;
 wireInput(S);
 
 if (!S.ctx) {

@@ -3,11 +3,13 @@ import * as lifecycle from './engine/lifecycle.js';
 import * as combat from './engine/combat.js';
 import * as enemies from './engine/enemies.js';
 import * as progression from './engine/progression.js';
+import { createDiagnosticApi } from './debug/logger.js';
 
 // 遊戲主類別：構造走混入，行為由各子模組方法組成（對外 API 不變）。
 export class Game {
   constructor(seed) {
     lifecycle.construct.call(this, seed);
+    this.diagnosticsApi = createDiagnosticApi(this);
   }
 }
 const { construct, ...lifecycleMethods } = lifecycle;

@@ -1,10 +1,13 @@
 import { WIDTH, HEIGHT, SHIPS, STAGES, STAGE_SECONDS, BOSS_AT, DROP_TTL } from '../data.js';
 import { clamp, compact, seededRandom } from './utils.js';
+import { EventLog } from '../debug/logger.js';
 
 // 建構遊戲實例並以種子初始化亂數狀態（參數 seed，回傳無）。
 export function construct(seed = Date.now()) {
   this.seed = seed;
   this.rng = seededRandom(seed);
+  this.frame = 0;
+  this.diagnostics = new EventLog();
   this.reset();
 }
 // 重置整局狀態與玩家初始數值（無參數，回傳無）。
@@ -34,6 +37,7 @@ export function reset() {
   this.shake = 0;
   this.flash = 0;
   this.id = 0;
+  this.frame = 0;
   this.practice = false;
   this.choices = [];
   this.player = {
@@ -57,6 +61,31 @@ export function reset() {
 // 推入待前端消費的遊戲事件（參數 type、details，回傳無）。
 export function emit(type, details = {}) {
   if (this.events.length < 160) this.events.push({ type, ...details });
+  this.diagnostics.record({
+    time: Number(this.time.toFixed(6)),
+    frame: this.frame,
+    level: type === 'error' ? 'error' : 'info',
+    category: type === 'damage' || type === 'bomb' ? 'combat' : 'lifecycle',
+    event: type,
+    stage: this.stageIndex,
+    mode: this.mode,
+    data: details,
+  });
+}
+
+export function debugSnapshot() {
+  const p = this.player;
+  return {
+    seed: this.seed,
+    frame: this.frame,
+    mode: this.mode,
+    stageIndex: this.stageIndex,
+    stageTime: this.stageTime,
+    time: this.time,
+    score: this.score,
+    player: { x: p.x, y: p.y, health: p.health, shield: p.shield, weapon: p.weapon, weaponLevel: p.weaponLevel, bombs: p.bombs },
+    counts: { enemies: this.enemies.length, bullets: this.bullets.length, drops: this.drops.length, effects: this.effects.length },
+  };
 }
 // 取出並清空事件佇列（無參數，回傳事件陣列）。
 export function drainEvents() {
@@ -139,6 +168,7 @@ export function update(dt, input = {}) {
 }
 // 推進固定步長的移動、開火、波次與清理（參數 dt、input，回傳無）。
 export function step(dt, input) {
+  this.frame++;
   this.time += dt;
   this.stageTime += dt;
   this.sinceHit += dt;

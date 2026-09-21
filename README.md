@@ -46,6 +46,17 @@ npm start
 
 - 格式：`npx prettier --check .`
 
+### AI Agent 診斷紀錄
+
+開發環境可在瀏覽器 DevTools Console 取得結構化遊戲事件：
+
+```js
+copy(window.__SKYFIRE_DEBUG__.exportLog())
+window.__SKYFIRE_DEBUG__.snapshot()
+```
+
+紀錄保留最新 2,000 筆，包含固定步驟、遊戲時間、關卡、模式與生命週期／戰鬥事件；不記錄每幀正常狀態。需要重新收集時可執行 `window.__SKYFIRE_DEBUG__.clearLog()`。
+
 ### 建置（`npm run build`）
 
 `build.mjs` 只用 Node.js 內建模組，把運行檔鏡像到 `dist/` 並做 minify（JS/CSS 剝註解壓空白，佈局與檔名不變；模組與 `index.html` 會加上內容指紋 `?v=`；每個輸出 JS 都過 `node --check`）：
