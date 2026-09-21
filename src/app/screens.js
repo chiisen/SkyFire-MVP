@@ -1,6 +1,6 @@
 import { SHIPS, STAGES } from '../data.js';
 import { $, storage, arrow, formatScore, formatTime } from './state.js';
-import { recordOf, submitRun } from './records.js';
+import { MODE_CAMPAIGN, recordOf, submitRun } from './records.js';
 import { updateHud } from './hud.js';
 
 // 清空鍵盤與觸控輸入狀態。
@@ -149,7 +149,7 @@ export function syncMode(S) {
     let newBest = false;
     if (!S.game.practice) {
       const result = submitRun(S.records, {
-        mode: 'campaign',
+        mode: MODE_CAMPAIGN,
         difficulty: S.game.difficulty,
         score: S.game.score,
         time: S.game.time,
@@ -232,7 +232,7 @@ export function processEvents(S) {
 }
 // 依目前選擇的難度更新機庫的本機紀錄顯示。
 export function refreshRecord(S) {
-  const rec = recordOf(S.records, 'campaign', $('difficulty').value);
+  const rec = recordOf(S.records, MODE_CAMPAIGN, $('difficulty').value);
   $('best-score').textContent = formatScore(rec?.score || 0);
   $('best-detail').textContent = rec
     ? `最快通關 ${rec.clearTime != null ? formatTime(rec.clearTime) : '--:--'} · 最高擦彈 ${rec.grazes}`

@@ -34,6 +34,13 @@ describe('本機紀錄', () => {
     assert.equal(out.junk, undefined);
   });
 
+  it('正規化剔除 NaN/Infinity 分數與時間', () => {
+    assert.deepEqual(normalizeRecords({ campaign: { normal: { score: NaN } } }), {});
+    assert.deepEqual(normalizeRecords({ campaign: { normal: { score: Infinity } } }), {});
+    const out = normalizeRecords({ campaign: { normal: { score: 5, clearTime: NaN } } });
+    assert.equal(out.campaign.normal.clearTime, null);
+  });
+
   it('首次提交即為最高分', () => {
     const { records, isBest, isFastest } = submitRun({}, run());
     assert.equal(isBest, true);

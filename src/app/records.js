@@ -1,11 +1,13 @@
 // 本機紀錄：以「模式 × 難度」為鍵保存最佳表現；純函式，無 DOM 與儲存相依。
+// 紀錄模式鍵集中於此，新增模式（首領連戰／每日挑戰）時一併擴充。
+export const MODE_CAMPAIGN = 'campaign';
 export function normalizeRecords(raw) {
   const out = {};
   if (!raw || typeof raw !== 'object') return out;
   for (const [mode, byDifficulty] of Object.entries(raw)) {
     if (!byDifficulty || typeof byDifficulty !== 'object') continue;
     for (const [difficulty, rec] of Object.entries(byDifficulty)) {
-      if (!rec || typeof rec.score !== 'number') continue;
+      if (!rec || !Number.isFinite(rec.score)) continue;
       (out[mode] ??= {})[difficulty] = {
         score: rec.score,
         time: Number(rec.time) || 0,
@@ -13,7 +15,7 @@ export function normalizeRecords(raw) {
         grazes: Number(rec.grazes) || 0,
         shipId: Number(rec.shipId) || 0,
         at: Number(rec.at) || 0,
-        clearTime: typeof rec.clearTime === 'number' ? rec.clearTime : null,
+        clearTime: Number.isFinite(rec.clearTime) ? rec.clearTime : null,
       };
     }
   }
@@ -23,7 +25,7 @@ export function normalizeRecords(raw) {
 export function migrateLegacyBest(best) {
   const score = Number(best) || 0;
   return score > 0
-    ? { campaign: { normal: { score, time: 0, kills: 0, grazes: 0, shipId: 0, at: 0, clearTime: null } } }
+    ? { [MODE_CAMPAIGN]: { normal: { score, time: 0, kills: 0, grazes: 0, shipId: 0, at: 0, clearTime: null } } }
     : {};
 }
 // 取得指定模式與難度的紀錄，無則回傳 null。

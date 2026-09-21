@@ -127,4 +127,19 @@ assert(S.game.mode === 'playing', '按 P 恢復戰鬥');
 const bombs = S.game.player.bombs;
 byId['bomb-button'].fire('click');
 assert(S.game.player.bombs === bombs - 1, '炸彈按鈕消耗 1 枚');
+// 受擊致死 → 結算寫入本機紀錄
+S.game.player.invulnerable = 0;
+S.game.player.bombs = 0;
+S.game.player.shield = 0;
+S.game.player.health = 1;
+S.game.hitPlayer();
+now += 16.7;
+rafCb(now);
+assert(S.game.mode === 'gameover', '受擊致死進入結算');
+assert(store.has('skyfire:records'), '結算寫入本機紀錄');
+const saved = JSON.parse(store.get('skyfire:records'));
+assert(
+  saved.campaign && saved.campaign.normal && typeof saved.campaign.normal.score === 'number',
+  '紀錄含 campaign/normal 分數'
+);
 console.log('app boot smoke: ALL OK');
