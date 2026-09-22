@@ -1,7 +1,7 @@
 # SkyFire-MVP 專案規範（AI Agent 指南）
 
 > 本文件為專案級規範，優先權高於全域指南。
-> 與 `CLAUDE.md`、`GEMINI.md` §1–§5 保持同步；`GEMINI.md` §6 起為 Gemini 專用延伸，不需同步至本文件。
+> 與 `CLAUDE.md`、`GEMINI.md` §1–§6 保持同步；`GEMINI.md` §7 起為 Gemini 專用延伸，不需同步至本文件。
 
 ## 1. 專案概述
 
@@ -34,3 +34,7 @@
 - Git Commit 格式：`<type>(<scope>): <subject>`，主旨與內容皆繁體中文。
 - 提交前提問「是否開始 Git 提交流程？」經核准後執行。
 - 根目錄 `CHANGELOG.md`（Keep a Changelog 格式，繁體中文）隨異動更新。
+
+## 6. Git 工作流程（PR 制）
+
+> 開發一律走分支與 PR，不直接提交 `main`。完整流程（分支 → 開 PR → 自我 Code Review → 修正與回覆 → 人類合併）詳見 [PR-WORKFLOW.md](./PR-WORKFLOW.md)。
